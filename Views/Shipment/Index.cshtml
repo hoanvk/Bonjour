@@ -1,0 +1,92 @@
+@model IEnumerable<Bonjour.Models.Shipment>;
+@{
+    Layout = "_AdminLayout";
+}
+<div class="card mt-4">
+    <div class="card-body">
+        <h5 class="card-title">Shipments</h5>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Carrier</th>
+                    <th scope="col">Consignee</th>
+                    <th scope="col">Departure</th>
+                    <th>Products</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var shipment in Model)
+                {
+                    <tr>
+                        <th scope="row">@shipment.Id</th>
+                        <td>@shipment.Carrier</td>
+                        <td>@shipment.Consignee</td>
+                        <td>@shipment.Departure</td>
+                        <td><a asp-controller="Product" asp-action="Index" asp-route-id="@shipment.Id">Products</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Create
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Create Shipment</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-floating" asp-action="Create" method="post">
+                            @Html.AntiForgeryToken()
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="carrier" name="carrier"
+                                    placeholder="Joe Doe">
+                                <label for="carrier">Carrier</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="consignee" name="consignee"
+                                    placeholder="Joe Doe">
+                                <label for="consignee">Consignee</label>
+                            </div>
+                            <div class="form-floating">
+                                <input type="text" class="form-control date" id="departure" name="departure">
+                                <label for="departure">Departure</label>
+                            </div>
+
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="create()">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        function create() {
+            const token = document.querySelector(
+                'input[name="__RequestVerificationToken"]'
+            ).value;
+            console.log('token :>> ', token);
+            var data = {
+                carrier: document.querySelector("#carrier").value,
+                consignee: document.querySelector("#consignee").value,
+                departure: document.querySelector("#departure").value,
+            }
+            submitFormData({
+                url: "@Url.Action("Create")",
+                data
+            });
+            console.log("Create clicked");
+        }
+    </script>
+}

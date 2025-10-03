@@ -1,0 +1,41 @@
+@model Bonjour.Models.Product;
+
+@{
+    Layout = "_AdminLayout";
+}
+
+<div class="card mt-4">
+    <div class="card-body">
+        <h5 class="card-title">@Model.Code</h5>
+        <p class="card-text">@Model.Name</p>
+        <div class="mb-3">
+            <label for="product_id" class="form-label">Id</label>
+            <input type="text" class="form-control" id="product_id">
+        </div>
+        <button type="button" class="btn btn-primary" id="button-confirm">Confirm</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/realtimehub")
+                .build();
+
+            connection.on("ReceiveNotification", (message) => {
+                console.log(`Notification: ${message}`);
+            });
+
+            connection.start().catch(err => console.error(err));
+
+            function sendNotification() {
+                const message = document.getElementById("product_id").value;
+                connection.invoke("SendNotification", message).catch(err => console.error(err));
+            }
+            const confirmButton = document.getElementById("button-confirm");
+            confirmButton.onclick = sendNotification;
+        });
+    </script>
+}

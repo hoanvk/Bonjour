@@ -9,11 +9,19 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/realtimehub")
+            .build();
+
+        connection.start().catch(err => console.error(err));
+
         function onScanSuccess(decodedText, decodedResult) {
             // handle the scanned code as you like, for example:
             console.log(`Code matched = ${decodedText}`, decodedResult);
+            connection.invoke("SendNotification", decodedText).catch(err => console.error(err));
         }
 
         function onScanFailure(error) {
@@ -25,4 +33,5 @@
             "reader", { fps: 10, qrbox: 250 });
         html5QrcodeScanner.render(onScanSuccess, onScanFailure);
     </script>
+
 }

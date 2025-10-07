@@ -1,0 +1,95 @@
+@model IEnumerable<Bonjour.Models.User>;
+@{
+    Layout = "_AdminLayout";
+}
+<div class="card mt-4">
+    <div class="card-body">
+        <h5 class="card-title">Users</h5>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">CreatedAt</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <th scope="row">@user.Id</th>
+                        <td>@user.Name</td>
+                        <td>@user.Username</td>
+                        <td>@user.CreatedAt</td>
+                        <td></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Create
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Create User</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-floating" asp-action="Create" method="post">
+                            @Html.AntiForgeryToken()
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="Name" name="Name" placeholder="Joe Doe">
+                                <label for="Name">Name</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="Username" name="Username"
+                                    placeholder="joedoe">
+                                <label for="Username">Username</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="password" class="form-control" id="Password" name="Password">
+                                <label for="Password">Password</label>
+                            </div>
+                            <div class="form-floating">
+                                <input type="password" class="form-control" id="ConfirmPassword" name="ConfirmPassword">
+                                <label for="ConfirmPassword">Confirm Password</label>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="create()">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        function create() {
+            const token = document.querySelector(
+                'input[name="__RequestVerificationToken"]'
+            ).value;
+            console.log('token :>> ', token);
+            var data = {
+                Name: document.getElementById("Name").value,
+                Username: document.getElementById("Username").value,
+                Password: document.getElementById("Password").value,
+                ConfirmPassword: document.getElementById("ConfirmPassword").value,
+            }
+            submitFormData({
+                url: "@Url.Action("Create")",
+                data
+            });
+            console.log("Create clicked");
+        }
+    </script>
+}

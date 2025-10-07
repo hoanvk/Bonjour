@@ -1,5 +1,7 @@
+import '@fortawesome/fontawesome-free/css/all.css';
 // Import our custom CSS
 import '../scss/styles.scss';
+import '../css/styles.css';
 import 'flatpickr/dist/flatpickr.css';
 import 'dropzone/dist/dropzone.css';
 // Import all of Bootstrap's JS
@@ -58,7 +60,7 @@ window.uploadFiles = function ({
             });
             this.on('addedfile', function (file) {
                 console.log('file added');
-                Swal.fire('SweetAlert2 is working!');
+                Swal.fire('Uploaded successful!');
             });
             this.on('error', function (file, errorMessage, xhr) {
                 // 'file' object contains details about the file that caused the error

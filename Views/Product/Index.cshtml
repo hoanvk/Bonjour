@@ -8,13 +8,14 @@
     <div class="card-header">
         <ul class="nav nav-tabs card-header-tabs">
             <li class="nav-item">
-                <a class="nav-link active" aria-current="true" href="#">Active</a>
+                <a class="nav-link" asp-action="Scan" asp-controller="Product" asp-route-id="@ViewBag.id">Scan</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
+                <a class="nav-link active" asp-action="Index" asp-controller="Product" asp-route-id="@ViewBag.id"
+                    aria-current="true">Product</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link disabled">Disabled</a>
+                <a class="nav-link" asp-action="QrCode" asp-controller="Shipment" asp-route-id="@ViewBag.id">QrCode</a>
             </li>
         </ul>
     </div>
@@ -62,10 +63,6 @@
                             </div>
                         </form>
 
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save changes</button>
                     </div>
                 </div>
             </div>

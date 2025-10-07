@@ -11,6 +11,7 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
+        "@fortawesome/fontawesome-free": "^7.1.0",
         "@microsoft/signalr": "^9.0.6",
         "@popperjs/core": "^2.11.8",
         "axios": "^1.12.2",

@@ -1,0 +1,100 @@
+﻿@model IEnumerable<Bonjour.Models.Product>;
+@{
+    ViewData["Title"] = "Product Page";
+    Layout = "_AdminLayout";
+}
+
+<div class="card mt-4">
+    <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item">
+                <a class="nav-link active" asp-controller="Product" asp-action="Scan" asp-route-id="@ViewBag.id"
+                    aria-current="true">Scan</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Product" asp-action="Index" asp-route-id="@ViewBag.id">Product</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-action="QrCode" asp-controller="Shipment" asp-route-id="@ViewBag.id">QrCode</a>
+            </li>
+        </ul>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Code</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Delivery</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model)
+                {
+                    <tr id="@product.Id">
+                        <td scope="row" data-product-column="id" onclick="handleIconClick(event)"><i
+                                class="fa-solid fa-circle-check"></i>
+                        </td>
+                        <td>@product.Code</td>
+                        <td>@product.Name</td>
+                        <td>@product.Quantity</td>
+                        <td data-product-column="delivery">@product.Delivery</td>
+                        <form asp-action="Edit" asp-controller="Product" asp-route-id="@product.Id" method="post">
+                            <input type="hidden" name="_method" value="PUT" />
+                            @Html.AntiForgeryToken()
+                        </form>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/realtimehub")
+                .build();
+
+            connection.on("ReceiveNotification", (message) => {
+                console.log(`Notification: ${message}`);
+                var product = JSON.parse(message);
+                console.log(product);
+                var productElement = document.getElementById(product.id);
+                console.log(productElement);
+                if (productElement) {
+                    if (product.quantity == product.delivery) {
+                        var productColumn = productElement.querySelector('[data-product-column="id"]');
+                        var productCheckbox = productColumn.querySelector("i");
+                        productCheckbox.className = "fa-regular fa-circle";
+                    }
+                    var productColumn = productElement.querySelector('[data-product-column="delivery"]');
+                    productColumn.innerHTML = product.delivery;
+                }
+            });
+
+            connection.start().catch(err => console.error(err));
+
+            function sendNotification() {
+                const message = document.getElementById("product_id").value;
+                connection.invoke("SendNotification", message).catch(err => console.error(err));
+            }
+            const confirmButton = document.getElementById("button-confirm");
+            confirmButton.onclick = sendNotification;
+        });
+    </script>
+    <script>
+        function handleIconClick(event) {
+            const parentElement = event.currentTarget;
+            var icon = parentElement.querySelector("i");
+            icon.className = "fa-regular fa-circle";
+            console.log(icon);
+        }
+    </script>
+
+}

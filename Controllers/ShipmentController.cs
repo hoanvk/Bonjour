@@ -1,10 +1,12 @@
 using Bonjour.Dtos;
 using Bonjour.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bonjour.Controllers;
 
+[Authorize]
 public class ShipmentController : Controller
 {
     private readonly IConfiguration configuration;
@@ -42,6 +44,10 @@ public class ShipmentController : Controller
         {
             return BadRequest("Shipment not found");
         }
+        var _productDetails = await dbContext.ProductDetails
+            .Where(p => dbContext.Products
+                .Any(q => q.ShipmentId == id && p.ProductId == q.Id)).ToListAsync();
+        dbContext.ProductDetails.RemoveRange(_productDetails);
         var _products = await dbContext.Products.Where(p => p.ShipmentId == id).ToListAsync();
         dbContext.Products.RemoveRange(_products);
         dbContext.Shipments.Remove(_shipment);
@@ -49,11 +55,4 @@ public class ShipmentController : Controller
         return Ok("Removed from db");
     }
 
-    [HttpGet("/Shipment/{id}/QrCode")]
-    public async Task<IActionResult> QrCode(int id)
-    {
-        var _products = await dbContext.Products.Where(product => product.ShipmentId == id).ToListAsync();
-        var products = _products.Select(_product => new ProductDto(_product.Id, _product.Code, _product.Name, $"/QrCode/{_product.Code}_{_product.Id}.png"));
-        return View("QrCode", products);
-    }
 }

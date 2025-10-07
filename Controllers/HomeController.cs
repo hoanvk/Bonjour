@@ -2,9 +2,11 @@ using System.Diagnostics;
 using Bonjour;
 using Microsoft.AspNetCore.Mvc;
 using Bonjour.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bonjour.Controllers;
 
+[Authorize]
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> logger;

@@ -4,9 +4,12 @@ using Bonjour.Models;
 using OfficeOpenXml;
 using QRCoder;
 using Microsoft.EntityFrameworkCore;
+using Bonjour.Dtos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bonjour.Controllers;
 
+[Authorize]
 public class ProductController : Controller
 {
     private readonly IConfiguration configuration;
@@ -20,14 +23,15 @@ public class ProductController : Controller
         this.dbContext = dbContext;
     }
 
+    [HttpGet("/Shipment/{id}/Product")]
     public async Task<IActionResult> Index(int id)
     {
         var _products = await dbContext.Products.Where(product => product.ShipmentId == id).ToListAsync();
         ViewBag.id = id;
-        return View(_products);
+        return View("Index", _products);
     }
 
-    [HttpPost]
+    [HttpPost("/Shipment/{id}/Product")]
     public async Task<IActionResult> Import(int id, IEnumerable<IFormFile> files)
     {
         logger.LogInformation("Import files");
@@ -77,25 +81,44 @@ public class ProductController : Controller
                             product.Delivery = 0;
                             product.ShipmentId = id;
                             dbContext.Products.Add(product);
-
+                            for (int i = 0; i < product.Quantity; i++)
+                            {
+                                var _productDetail = new ProductDetails()
+                                {
+                                    Product = product,
+                                    Key = "qrcode",
+                                    Value = Guid.NewGuid().ToString(),
+                                };
+                                dbContext.ProductDetails.Add(_productDetail);
+                            }
                         }
 
                         await dbContext.SaveChangesAsync();
-                        var _products = await dbContext.Products.Where(product => product.ShipmentId == id).ToListAsync();
+                        var _model = await dbContext.Products.Join(dbContext.ProductDetails,
+                            product => product.Id,
+                            productDetail => productDetail.ProductId,
+                            (product, productDetail) => new { product, productDetail })
+                                .Where(t => t.product.ShipmentId == id)
+                                .ToListAsync();
                         using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
                         {
-                            foreach (var _product in _products)
+                            foreach (var _item in _model)
                             {
+
                                 // Create QR code data with the desired error correction level (e.g., ECCLevel.Q for 25% error correction)
-                                QRCodeData qrCodeData = qrGenerator.CreateQrCode($"{configuration["QrCodeBaseUrl"]}{Url.Action("Details", new { id = _product.Id })}", QRCodeGenerator.ECCLevel.Q);
+                                QRCodeData qrCodeData = qrGenerator.CreateQrCode(_item.productDetail.Value, QRCodeGenerator.ECCLevel.Q);
 
                                 // Create a PNG byte array from the QR code data
                                 using (PngByteQRCode qrCode = new PngByteQRCode(qrCodeData))
                                 {
                                     byte[] qrCodeImageBytes = qrCode.GetGraphic(10);
-
+                                    string directory = Path.Combine("storage", "qrcode", $"{_item.product.ShipmentId}", _item.product.Code);
+                                    if (!Directory.Exists(directory))
+                                    {
+                                        Directory.CreateDirectory(directory);
+                                    }
                                     // Save the byte array as a PNG file
-                                    await System.IO.File.WriteAllBytesAsync(Path.Combine("storage", "qrcode", $"{_product.Code}_{_product.Id}.png"), qrCodeImageBytes);
+                                    await System.IO.File.WriteAllBytesAsync(Path.Combine(directory, $"{_item.productDetail.Value}.png"), qrCodeImageBytes);
                                 }
                             }
                         }
@@ -116,5 +139,39 @@ public class ProductController : Controller
     {
         var _product = await dbContext.Products.FindAsync(id);
         return View("Details", _product);
+    }
+
+    [HttpPut("/Product/{id}")]
+    public async Task<IActionResult> Edit(int id)
+    {
+        var _productDetail = await dbContext.ProductDetails.FindAsync(id);
+        if (_productDetail == null)
+        {
+            return BadRequest($"Id {id} is not valid.");
+        }
+        var _product = await dbContext.Products.FindAsync(_productDetail.ProductId);
+        _product.Delivery++;
+        dbContext.Products.Update(_product);
+        await dbContext.SaveChangesAsync();
+        return Ok("Scanned");
+    }
+
+    [HttpGet("/Shipment/{id}/Product/Scan")]
+    public async Task<IActionResult> Scan(int id)
+    {
+        var _products = await dbContext.Products.Where(product => product.ShipmentId == id).ToListAsync();
+        ViewBag.id = id;
+        return View("Scan", _products);
+    }
+
+    [HttpGet("/Shipment/{id}/Product/QrCode")]
+    public async Task<IActionResult> QrCode(int id)
+    {
+        var model = await dbContext.Products.Join(dbContext.ProductDetails,
+        product => product.Id,
+        productDetail => productDetail.ProductId,
+        (product, productDetail) => new { product, productDetail }).Where(model => model.product.ShipmentId == id && model.productDetail.Key == "qrcode").ToListAsync();
+        var products = model.Select(item => new ProductDto(item.productDetail.Id, item.product.Code, item.product.Name, $"/QrCode/{item.product.ShipmentId}/{item.product.Code}/{item.productDetail.Value}.png"));
+        return View("QrCode", products);
     }
 }

@@ -2,9 +2,13 @@
 @{
     Layout = "_AdminLayout";
 }
-<div class="card mt-4">
+<h1 class="mt-4">User</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Home</a></li>
+    <li class="breadcrumb-item active">User</li>
+</ol>
+<div class="card mb-4">
     <div class="card-body">
-        <h5 class="card-title">Users</h5>
         <table class="table">
             <thead>
                 <tr>

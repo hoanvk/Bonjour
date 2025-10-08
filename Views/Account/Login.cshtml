@@ -2,24 +2,32 @@
 @{
     Layout = "_AuthLayout";
 }
-<form asp-action="Login" asp-controller="Account" method="post">
-    <img class="mb-4" src="/docs/5.2/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
-    <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
-    <div class="form-floating">
-        <input type="text" class="form-control" id="floatingInput" placeholder="Username" name="Username">
-        <label for="floatingInput">Username</label>
+<div class="card shadow-lg border-0 rounded-lg mt-5">
+    <div class="card-header">
+        <h3 class="text-center font-weight-light my-4">Login</h3>
     </div>
-    <div class="form-floating">
-        <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="Password">
-        <label for="floatingPassword">Password</label>
+    <div class="card-body">
+        <form asp-action="Login" asp-controller="Account" method="post">
+            <div class="form-floating mb-3">
+                <input class="form-control" id="inputUsername" type="text" placeholder="Username" name="Username" />
+                <label for="inputUsername">Username</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input class="form-control" id="inputPassword" type="password" placeholder="Password" name="Password" />
+                <label for="inputPassword">Password</label>
+            </div>
+            <div class="form-check mb-3">
+                <input class="form-check-input" id="inputRememberPassword" type="checkbox" value="" />
+                <label class="form-check-label" for="inputRememberPassword">Remember Password</label>
+            </div>
+            <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+                <a class="small" href="password.html">Forgot Password?</a>
+                <button class="btn btn-primary" href="index.html">Login</button>
+            </div>
+        </form>
     </div>
-
-    <div class="checkbox mb-3">
-        <label>
-            <input type="checkbox" value="remember-me"> Remember me
-        </label>
+    <div class="card-footer text-center py-3">
+        <div class="small"><a href="register.html">Need an account? Sign up!</a></div>
     </div>
-    <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-    <p class="mt-5 mb-3 text-muted">© 2017–2022</p>
-</form>
+</div>

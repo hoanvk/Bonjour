@@ -9,13 +9,13 @@
         <ul class="nav nav-tabs card-header-tabs">
             <li class="nav-item">
                 <a class="nav-link active" asp-controller="Product" asp-action="Scan" asp-route-id="@ViewBag.id"
-                    aria-current="true">Scan</a>
+                    aria-current="true">Shipping</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" asp-controller="Product" asp-action="Index" asp-route-id="@ViewBag.id">Product</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" asp-action="QrCode" asp-controller="Shipment" asp-route-id="@ViewBag.id">QrCode</a>
+                <a class="nav-link" asp-controller="Product" asp-action="QrCode" asp-route-id="@ViewBag.id">QrCode</a>
             </li>
         </ul>
     </div>

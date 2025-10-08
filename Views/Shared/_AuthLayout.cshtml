@@ -1,7 +1,7 @@
 @model Bonjour.Models.AccountModel;
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="auth">
 
 <head>
     <meta charset="UTF-8">
@@ -10,10 +10,10 @@
     <script src="~/dist/main.js" defer></script>
 </head>
 
-<body class="simple-login">
-    <div class="simple-login-container">
+<body class="auth text-center">
+    <main class="form-signin w-100 m-auto">
         @RenderBody()
-    </div>
+    </main>
 </body>
 
 </html>

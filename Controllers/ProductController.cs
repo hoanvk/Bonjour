@@ -134,7 +134,7 @@ public class ProductController : Controller
         }
         return BadRequest("No files selected.");
     }
-    [HttpGet("/Product/{id}/Details")]
+    [HttpGet("/Product/{id}")]
     public async Task<IActionResult> Details(int id)
     {
         var _product = await dbContext.Products.FindAsync(id);
@@ -164,7 +164,7 @@ public class ProductController : Controller
         return View("Scan", _products);
     }
 
-    [HttpGet("/Shipment/{id}/Product/QrCode")]
+    [HttpGet("/Shipment/{id}")]
     public async Task<IActionResult> QrCode(int id)
     {
         var model = await dbContext.Products.Join(dbContext.ProductDetails,
@@ -172,6 +172,7 @@ public class ProductController : Controller
         productDetail => productDetail.ProductId,
         (product, productDetail) => new { product, productDetail }).Where(model => model.product.ShipmentId == id && model.productDetail.Key == "qrcode").ToListAsync();
         var products = model.Select(item => new ProductDto(item.productDetail.Id, item.product.Code, item.product.Name, $"/QrCode/{item.product.ShipmentId}/{item.product.Code}/{item.productDetail.Value}.png"));
+        ViewBag.id = id;
         return View("QrCode", products);
     }
 }

@@ -8,13 +8,13 @@
 <div class="container px-4 text-center">
     <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a class="nav-link" asp-controller="Product" asp-action="Scan" asp-route-id="@ViewBag.id">Scan</a>
+            <a class="nav-link" asp-controller="Product" asp-action="Scan" asp-route-id="@ViewBag.id">Shipping</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" asp-controller="Product" asp-action="Index" asp-route-id="@ViewBag.id">Product</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active" asp-action="QrCode" asp-controller="Shipment" asp-route-id="@ViewBag.id"
+            <a class="nav-link active" asp-controller="Product" asp-action="QrCode" asp-route-id="@ViewBag.id"
                 aria-current="true">QrCode</a>
         </li>
     </ul>

@@ -3,7 +3,11 @@
     ViewData["Title"] = "Product Page";
     Layout = "_AdminLayout";
 }
-
+<h1 class="mt-4">Product</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item"><a asp-controller="Shipment" asp-action="Index">Freight</a></li>
+    <li class="breadcrumb-item active">Product</li>
+</ol>
 <div class="card mt-4">
     <div class="card-header">
         <ul class="nav nav-tabs card-header-tabs">

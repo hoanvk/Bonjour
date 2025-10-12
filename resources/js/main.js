@@ -1,6 +1,7 @@
 import "@fortawesome/fontawesome-free/css/all.css";
 // Import our custom CSS
 import "../scss/styles.scss";
+import "../css/flash-on-update.css";
 import "flatpickr/dist/flatpickr.css";
 import "dropzone/dist/dropzone.css";
 // Import all of Bootstrap's JS
@@ -31,6 +32,7 @@ window.submitFormData = function ({ url, data }) {
 		});
 };
 import Swal from "sweetalert2";
+window.Swal = Swal;
 import Dropzone from "dropzone";
 window.uploadFiles = function ({
 	selector,
@@ -97,3 +99,16 @@ window.addEventListener("DOMContentLoaded", (event) => {
 	});
 	Menu();
 });
+
+window.createHttpPost = function (url, data, { onSuccess, onError } = {}) {
+	axios
+		.post(url, data)
+		.then(function (response) {
+			console.log(response);
+			onSuccess && onSuccess(response);
+		})
+		.catch(function (error) {
+			console.log(error);
+			onError && onError(error);
+		});
+};

@@ -3,7 +3,11 @@
     ViewData["Title"] = "Product Page";
     Layout = "_AdminLayout";
 }
-
+<h1 class="mt-4">Shipping</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item"><a asp-controller="Shipment" asp-action="Index">Freight</a></li>
+    <li class="breadcrumb-item active">Shipping</li>
+</ol>
 <div class="card mt-4">
     <div class="card-header">
         <ul class="nav nav-tabs card-header-tabs">
@@ -20,7 +24,7 @@
         </ul>
     </div>
     <div class="card-body">
-        <table class="table">
+        <table class="table table-dark table-striped">
             <thead>
                 <tr>
                     <th scope="col">#</th>
@@ -28,14 +32,22 @@
                     <th scope="col">Name</th>
                     <th scope="col">Quantity</th>
                     <th scope="col">Delivery</th>
+                    <th>Updated At</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var product in Model)
                 {
                     <tr id="@product.Id">
-                        <td scope="row" data-product-column="id" onclick="handleIconClick(event)"><i
-                                class="fa-solid fa-circle-check"></i>
+                        <td scope="row" data-product-column="id">
+                            @if (product.Quantity != product.Delivery)
+                            {
+                                <i class="fa-regular fa-circle"></i>
+                            }
+                            else
+                            {
+                                <i class="fa-solid fa-circle-check"></i>
+                            }
                         </td>
                         <td>@product.Code</td>
                         <td>@product.Name</td>
@@ -45,6 +57,9 @@
                             <input type="hidden" name="_method" value="PUT" />
                             @Html.AntiForgeryToken()
                         </form>
+                        <td data-product-column="updated_at">@(product.UpdatedAt.HasValue ?
+                                                product.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") :
+                                                string.Empty)</td>
                     </tr>
                 }
             </tbody>
@@ -59,23 +74,25 @@
         document.addEventListener('DOMContentLoaded', function () {
             const connection = new signalR.HubConnectionBuilder()
                 .withUrl("/realtimehub")
+                .withAutomaticReconnect()
                 .build();
 
-            connection.on("ReceiveNotification", (message) => {
-                console.log(`Notification: ${message}`);
-                var product = JSON.parse(message);
-                console.log(product);
+            connection.on("ReceiveNotification", (product) => {
+                console.log(`Notification: ${JSON.stringify(product)}`);
                 var productElement = document.getElementById(product.id);
                 console.log(productElement);
                 if (productElement) {
                     if (product.quantity == product.delivery) {
                         var productColumn = productElement.querySelector('[data-product-column="id"]');
                         var productCheckbox = productColumn.querySelector("i");
-                        productCheckbox.className = "fa-regular fa-circle";
+                        productCheckbox.className = "fa-solid fa-circle-check";
                     }
-                    var productColumn = productElement.querySelector('[data-product-column="delivery"]');
-                    productColumn.innerHTML = product.delivery;
-                }
+                    var deliveryColumn = productElement.querySelector('[data-product-column="delivery"]');
+                    updateContentAndFlash(deliveryColumn, product.delivery);
+                    var updatedAtColumn = productElement.querySelector('[data-product-column="updated_at"]');
+                    updateContentAndFlash(updatedAtColumn, product.updatedAt);
+                    @* productColumn.innerHTML = product.delivery; *@
+                                                                                }
             });
 
             connection.start().catch(err => console.error(err));
@@ -84,8 +101,7 @@
                 const message = document.getElementById("product_id").value;
                 connection.invoke("SendNotification", message).catch(err => console.error(err));
             }
-            const confirmButton = document.getElementById("button-confirm");
-            confirmButton.onclick = sendNotification;
+
         });
     </script>
     <script>
@@ -94,6 +110,15 @@
             var icon = parentElement.querySelector("i");
             icon.className = "fa-regular fa-circle";
             console.log(icon);
+        }
+        function updateContentAndFlash(elementToFlash, newContent) {
+            elementToFlash.textContent = newContent;
+            elementToFlash.classList.add('flash-on-update');
+
+            // Remove the class after the animation duration to allow re-triggering
+            setTimeout(() => {
+                elementToFlash.classList.remove('flash-on-update');
+            }, 500); // Match animation duration
         }
     </script>
 

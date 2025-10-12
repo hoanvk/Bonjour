@@ -6,6 +6,7 @@ using QRCoder;
 using Microsoft.EntityFrameworkCore;
 using Bonjour.Dtos;
 using Microsoft.AspNetCore.Authorization;
+using Bonjour.Domain.Products;
 
 namespace Bonjour.Controllers;
 
@@ -87,7 +88,7 @@ public class ProductController : Controller
                                 {
                                     Product = product,
                                     Key = "qrcode",
-                                    Value = Guid.NewGuid().ToString(),
+                                    Value = ShortIdGenerator.Generate(12),
                                 };
                                 dbContext.ProductDetails.Add(_productDetail);
                             }
@@ -98,7 +99,7 @@ public class ProductController : Controller
                             product => product.Id,
                             productDetail => productDetail.ProductId,
                             (product, productDetail) => new { product, productDetail })
-                                .Where(t => t.product.ShipmentId == id)
+                                .Where(t => t.product.ShipmentId == id && t.productDetail.Key == "qrcode")
                                 .ToListAsync();
                         using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
                         {

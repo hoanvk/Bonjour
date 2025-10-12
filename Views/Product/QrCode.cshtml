@@ -4,36 +4,34 @@
     Layout = "_AdminLayout";
 }
 
-
-<div class="container px-4 text-center">
-    <ul class="nav nav-tabs">
-        <li class="nav-item">
-            <a class="nav-link" asp-controller="Product" asp-action="Scan" asp-route-id="@ViewBag.id">Shipping</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" asp-controller="Product" asp-action="Index" asp-route-id="@ViewBag.id">Product</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link active" asp-controller="Product" asp-action="QrCode" asp-route-id="@ViewBag.id"
-                aria-current="true">QrCode</a>
-        </li>
-    </ul>
-    <div class="row gx-5">
-        @foreach (var productDto in Model)
-        {
-            <div class="col-3 p-3">
-                <div class="card" style="width: 18rem;">
-                    <img src="@productDto.QrCode" class="card-img-top" alt="qrcode">
-                    <div class="card-body">
-                        <h5 class="card-title">@productDto.Code</h5>
-                        <p class="card-text">@productDto.Name</p>
-                    </div>
-
+<h1 class="mt-4">QrCode</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item"><a asp-controller="Shipment" asp-action="Index">Freight</a></li>
+    <li class="breadcrumb-item active">QrCode</li>
+</ol>
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Product" asp-action="Scan" asp-route-id="@ViewBag.id">Shipping</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Product" asp-action="Index" asp-route-id="@ViewBag.id">Product</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" asp-controller="Product" asp-action="QrCode" asp-route-id="@ViewBag.id"
+            aria-current="true">QrCode</a>
+    </li>
+</ul>
+<div class="row row-cols-6 row-cols-md-12 g-4">
+    @foreach (var productDto in Model)
+    {
+        <div class="col">
+            <div class="card">
+                <img src=" @productDto.QrCode" class="card-img-top" alt="qrcode">
+                <div class="card-body">
+                    <h5 class="card-title">@productDto.Code</h5>
+                    <p class="card-text">@productDto.Name</p>
                 </div>
-                @* <div class="p-3 bg-light">
-                            <img src="@productDto.QrCode" class="img-thumbnail" alt="qrcode">
-                        </div> *@
             </div>
-        }
-    </div>
+        </div>
+    }
 </div>

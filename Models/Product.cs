@@ -15,5 +15,6 @@ public class Product
     public int Quantity { get; set; }
     public int Delivery { get; set; }
     public DateTime CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
     public Shipment Shipment { get; set; }
 }

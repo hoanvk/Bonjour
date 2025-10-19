@@ -20,8 +20,17 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        var _products = dbContext.Products;
-        return View(_products);
+        return View();
+    }
+
+    public IActionResult Loading()
+    {
+        return View();
+    }
+
+    public IActionResult Unloading()
+    {
+        return View();
     }
 
     public IActionResult Privacy()

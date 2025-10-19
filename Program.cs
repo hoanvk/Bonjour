@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Bonjour;
 using Bonjour.Lib.Services;
 using Bonjour.Models;
@@ -7,11 +8,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var configuration = builder.Configuration.AddEnvironmentVariables().Build();
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
@@ -24,9 +29,16 @@ builder.Services.AddAuthentication("cookie")
             options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Set cookie expiration
             options.SlidingExpiration = true; // Re-issue cookie if more than halfway expired
         });
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy => policy.RequireClaim(ClaimTypes.Name, "admin"));
+    options.AddPolicy("User", policy => policy.RequireRole("User"));
+    options.AddPolicy("Loading", policy => policy.RequireRole("Loading"));
+    options.AddPolicy("Unloading", policy => policy.RequireRole("Unloading"));
+});
 builder.Services.AddTransient<Bonjour.Domain.Users.PasswordHasher>();
 var app = builder.Build();
-
+app.UseSerilogRequestLogging();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

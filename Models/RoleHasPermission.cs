@@ -3,15 +3,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Bonjour.Models;
 
-public class Shipment
+public class RoleHasPermission
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
-    public string Carrier { get; set; }
-    public string Consignee { get; set; }
-    public DateTime Departure { get; set; }
-    public string? Status { get; set; }
-
+    [ForeignKey("Role")]
+    public int RoleId { get; set; }
+    [ForeignKey("Permission")]
+    public int PermissionId { get; set; }
     public DateTime CreatedAt { get; set; }
+    public Role Role { get; set; }
+    public Permission Permission { get; set; }
 }

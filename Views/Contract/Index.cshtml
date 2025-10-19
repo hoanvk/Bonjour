@@ -1,0 +1,66 @@
+@model IEnumerable<Bonjour.Models.Contract>;
+@{
+    Layout = "_AdminLayout";
+}
+<div class="card mt-4">
+    <div class="card-body">
+        <h5 class="card-title">Contracts</h5>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Customer</th>
+                    <th scope="col">Start Date</th>
+                    <th scope="col">End Date</th>
+                    <th>Products</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var contract in Model)
+                {
+                    <tr>
+                        <th scope="row">@contract.Id</th>
+                        <td>@contract.Name</td>
+                        <td>@contract.Customer</td>
+                        <td>@contract.StartDate</td>
+                        <td>@contract.EndDate</td>
+                        <td><a asp-controller="ContractProduct" asp-action="Index" asp-route-id="@contract.Id">Products</a>
+                        </td>
+                        <td><button class="btn" type="button" onclick="removeContractHandler(@contract.Id)"><i
+                                    class="fa fa-trash"></i></button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createContractModal">
+            Create
+        </button>
+        <form asp-action="Delete" method="post" id="deleteContractForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="" />
+        </form>
+        <!-- Modal -->
+        @Html.Partial("Create.cshtml")
+    </div>
+</div>
+@section Scripts {
+    <script defer>
+        function createContractHandler() {
+            submitFormData("createContractForm", [
+                "input[name='Name']",
+                "input[name='Customer']",
+                "input[name='StartDate']",
+                "input[name='EndDate']"
+            ]);
+        }
+        function removeContractHandler(id) {
+            const form = document.getElementById("deleteContractForm");
+            const contractIdElement = form.querySelector('input[name="id"]');
+            contractIdElement.value = id;
+            submitFormData("deleteContractForm", ["input[name='id']"]);
+        }
+    </script>
+}

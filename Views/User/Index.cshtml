@@ -27,7 +27,9 @@
                         <td>@user.Name</td>
                         <td>@user.Username</td>
                         <td>@user.CreatedAt</td>
-                        <td></td>
+                        <td><button class="btn" type="button" onclick="removeUserHandler(@user.Id)"><i
+                                    class="fa fa-trash"></i></button></td>
+
                     </tr>
                 }
             </tbody>
@@ -36,7 +38,10 @@
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
             Create
         </button>
-
+        <form asp-action="Delete" method="post" id="deleteUserForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="" />
+        </form>
         <!-- Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -46,7 +51,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form class="form-floating" asp-action="Create" method="post">
+                        <form class="form-floating" asp-action="Create" method="post" id="createUserForm">
                             @Html.AntiForgeryToken()
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control" id="Name" name="Name" placeholder="Joe Doe">
@@ -69,7 +74,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" onclick="create()">Save changes</button>
+                        <button type="button" class="btn btn-primary" onclick="createUserHandler()">Save
+                            changes</button>
                     </div>
                 </div>
             </div>
@@ -77,23 +83,23 @@
     </div>
 </div>
 @section Scripts {
-    <script>
-        function create() {
-            const token = document.querySelector(
-                'input[name="__RequestVerificationToken"]'
-            ).value;
-            console.log('token :>> ', token);
-            var data = {
-                Name: document.getElementById("Name").value,
-                Username: document.getElementById("Username").value,
-                Password: document.getElementById("Password").value,
-                ConfirmPassword: document.getElementById("ConfirmPassword").value,
-            }
-            submitFormData({
-                url: "@Url.Action("Create")",
-                data
-            });
+    <script defer>
+        function createUserHandler() {
+            submitFormData("createUserForm", [
+                'input[name="Name"]',
+                'input[name="Username"]',
+                'input[name="Password"]',
+                'input[name="ConfirmPassword"]'
+            ]);
             console.log("Create clicked");
+        }
+
+        function removeUserHandler(id) {
+            const form = document.getElementById("deleteUserForm");
+            const userIdElement = form.querySelector('input[name="id"]');
+            userIdElement.value = id;
+            submitFormData("deleteUserForm", ["input[name='id']"]);
+            console.log("Delete clicked");
         }
     </script>
 }

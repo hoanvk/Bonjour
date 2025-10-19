@@ -1,5 +1,6 @@
 using Bonjour.Dtos;
 using Bonjour.Models;
+using Bonjour.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -27,10 +28,32 @@ public class ShipmentController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Shipment shipment)
+    public async Task<IActionResult> Create(CreateShipmentRequest shipment)
     {
         logger.LogInformation("Create shipment");
-        dbContext.Shipments.Add(shipment);
+        var _shipment = new Shipment()
+        {
+            Carrier = shipment.Carrier,
+            Consignee = shipment.Consignee,
+            Departure = shipment.Departure,
+            Status = shipment.Status
+        };
+        dbContext.Shipments.Add(_shipment);
+        await dbContext.SaveChangesAsync();
+        return Ok("Saved to db");
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, CreateShipmentRequest shipment)
+    {
+        logger.LogInformation("Edit shipment");
+        var _shipment = await dbContext.Shipments.FindAsync(id);
+        _shipment.Carrier = shipment.Carrier;
+        _shipment.Consignee = shipment.Consignee;
+        _shipment.Departure = shipment.Departure;
+        _shipment.Status = shipment.Status;
+        dbContext.Shipments.Update(_shipment);
         await dbContext.SaveChangesAsync();
         return Ok("Saved to db");
     }
@@ -39,17 +62,16 @@ public class ShipmentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
-        var _shipment = await dbContext.Shipments.FirstOrDefaultAsync();
+        var _shipment = await dbContext.Shipments.FindAsync(id);
         if (_shipment == null)
         {
             return BadRequest("Shipment not found");
         }
-        var _productDetails = await dbContext.ProductDetails
-            .Where(p => dbContext.Products
-                .Any(q => q.ShipmentId == id && p.ProductId == q.Id)).ToListAsync();
-        dbContext.ProductDetails.RemoveRange(_productDetails);
-        var _products = await dbContext.Products.Where(p => p.ShipmentId == id).ToListAsync();
-        dbContext.Products.RemoveRange(_products);
+        var _shipmentProducts = await dbContext.ShipmentProducts.Where(p => p.ShipmentId == id).ToListAsync();
+        if (_shipmentProducts != null && _shipmentProducts.Any())
+        {
+            dbContext.ShipmentProducts.RemoveRange(_shipmentProducts);
+        }
         dbContext.Shipments.Remove(_shipment);
         await dbContext.SaveChangesAsync();
         return Ok("Removed from db");

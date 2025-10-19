@@ -1,0 +1,37 @@
+<div class="modal fade" id="createContractModal" tabindex="-1" aria-labelledby="createContractModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="createContractModalLabel">Create Contract</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="form-floating" asp-action="Create" method="post" id="createContractForm">
+                    @Html.AntiForgeryToken()
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="Name" name="Name" placeholder="Joe Doe">
+                        <label for="Name">Name</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="Customer" name="Customer" placeholder="Joe Doe">
+                        <label for="Customer">Customer</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control date" id="StartDate" name="StartDate">
+                        <label for="StartDate">Start Date</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="text" class="form-control date" id="EndDate" name="EndDate">
+                        <label for="EndDate">End Date</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="createContractHandler()">Save
+                    changes</button>
+            </div>
+        </div>
+    </div>
+</div>

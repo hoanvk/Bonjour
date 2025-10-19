@@ -13,6 +13,7 @@
                     <th scope="col">Consignee</th>
                     <th scope="col">Departure</th>
                     <th>Products</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,6 +25,8 @@
                         <td>@shipment.Consignee</td>
                         <td>@shipment.Departure</td>
                         <td><a asp-controller="Product" asp-action="Index" asp-route-id="@shipment.Id">Products</a></td>
+                        <td><button class="btn" type="button" onclick="removeShipmentHandler(@shipment.Id)"><i
+                                    class="fa fa-trash"></i></button></td>
                     </tr>
                 }
             </tbody>
@@ -32,7 +35,10 @@
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
             Create
         </button>
-
+        <form asp-action="Delete" method="post" id="deleteShipmentForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="" />
+        </form>
         <!-- Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -42,7 +48,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form class="form-floating" asp-action="Create" method="post">
+                        <form class="form-floating" asp-action="Create" method="post" id="createShipmentForm">
                             @Html.AntiForgeryToken()
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control" id="carrier" name="carrier"
@@ -63,7 +69,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" onclick="create()">Save changes</button>
+                        <button type="button" class="btn btn-primary" onclick="createShipmentHandler()">Save
+                            changes</button>
                     </div>
                 </div>
             </div>
@@ -71,8 +78,8 @@
     </div>
 </div>
 @section Scripts {
-    <script>
-        function create() {
+    <script defer>
+        function createShipmentHandler() {
             const token = document.querySelector(
                 'input[name="__RequestVerificationToken"]'
             ).value;
@@ -82,11 +89,17 @@
                 consignee: document.querySelector("#consignee").value,
                 departure: document.querySelector("#departure").value,
             }
-            submitFormData({
-                url: "@Url.Action("Create")",
-                data
-            });
-            console.log("Create clicked");
+            submitFormData("createShipmentForm", [
+                "input[name='carrier']",
+                "input[name='consignee']",
+                "input[name='departure']"
+            ]);
+        }
+        function removeShipmentHandler(id) {
+            const form = document.getElementById("deleteShipmentForm");
+            const shipmentIdElement = form.querySelector('input[name="id"]');
+            shipmentIdElement.value = id;
+            submitFormData("deleteShipmentForm", ["input[name='id']"]);
         }
     </script>
 }

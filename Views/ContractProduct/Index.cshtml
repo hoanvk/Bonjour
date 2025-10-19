@@ -1,0 +1,89 @@
+﻿@model IEnumerable<Bonjour.Models.Product>;
+@{
+    ViewData["Title"] = "Product Page";
+    Layout = "_AdminLayout";
+}
+<h1 class="mt-4">Product</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item"><a asp-controller="Contract" asp-action="Index">Contract</a></li>
+    <li class="breadcrumb-item active">Product</li>
+</ol>
+<div class="card mt-4">
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Code</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Loading</th>
+                    <th scope="col">Unloading</th>
+                    <th scope="col">CreatedAt</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model)
+                {
+                    <tr>
+                        <th scope="row">@product.Id</th>
+                        <td>@product.Code</td>
+                        <td>@product.Name</td>
+                        <td>@product.Quantity</td>
+                        <td>@product.Delivery</td>
+                        <td>@product.Delivery</td>
+                        <td>@product.CreatedAt</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#importFileModal">
+            Import
+        </button>
+
+        <!-- Modal -->
+        @Html.Partial("Import.cshtml")
+    </div>
+</div>
+@section Scripts {
+    <script defer>
+        function uploadFilesHandler() {
+            const formElement = document.getElementById("importProductsForm");
+            const url = formElement.action;
+            const files = formElement.querySelector('input[name="files"]').files;
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                formData.append('files', files[i]);
+            }
+
+            const token = document.querySelector(
+                'input[name="__RequestVerificationToken"]'
+            ).value;
+            axios.post(url, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    RequestVerificationToken: token,
+                }
+            })
+                .then((success) => {
+                    console.log("success :>> ", success);
+                    Swal.fire({
+                        icon: "success",
+                        title: "Success!",
+                        text: success.data,
+                    }).then(() => {
+                        location.reload();
+                    });
+                })
+                .catch((error) => {
+                    console.log("error :>> ", error);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: error.message,
+                    });
+                });
+        }
+    </script>
+}

@@ -12,11 +12,13 @@ public class AccountController : Controller
 {
     private readonly ApplicationDbContext dbContext;
     private readonly PasswordHasher passwordHasher;
+    private readonly ILogger<AccountController> logger;
 
-    public AccountController(ApplicationDbContext dbContext, PasswordHasher passwordHasher)
+    public AccountController(ApplicationDbContext dbContext, PasswordHasher passwordHasher, ILogger<AccountController> logger)
     {
         this.dbContext = dbContext;
         this.passwordHasher = passwordHasher;
+        this.logger = logger;
     }
 
     [HttpGet]
@@ -35,12 +37,12 @@ public class AccountController : Controller
             ModelState.AddModelError(nameof(account.Username), "User not found");
             return View(account);
         }
+        logger.LogInformation("User {Password} found in database.", _user.Password);
         if (passwordHasher.VerifyPassword(account.Password, _user.Password, _user.Salt))
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, account.Username),
-                new Claim(ClaimTypes.Role, "Shipper")
+                new Claim(ClaimTypes.Name, account.Username)
             };
             var claimsIdentity = new ClaimsIdentity(claims, "cookie");
             await HttpContext.SignInAsync("cookie", new ClaimsPrincipal(claimsIdentity));
@@ -59,5 +61,5 @@ public class AccountController : Controller
     }
 
     [Authorize]
-    public IActionResult AccessDenied() => View();
+    public IActionResult AccessDenied() => View("401");
 }

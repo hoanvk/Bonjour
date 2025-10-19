@@ -1,0 +1,32 @@
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Import" method="post" asp-route-id="@ViewBag.id" id="form-import">
+                    <div class="dropzone" id="myDropzone">
+
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            uploadFiles({
+                selector: '#myDropzone',
+                options: {
+                    url: document.querySelector('#form-import').action,
+                    paramName: 'files',
+                    acceptedFiles: '.xlsx,.xls',
+                }
+            })
+        });
+    </script>
+}

@@ -48,44 +48,73 @@
             </tbody>
         </table>
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#importFileModal">
             Import
         </button>
 
         <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="importFileModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Import products</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form asp-action="Import" method="post" asp-route-id="@ViewBag.id" id="form-import">
-                            <div class="dropzone" id="myDropzone">
-
+                        <form asp-action="Import" asp-route-id="@ViewBag.id" method="post" id="importProductsForm">
+                            @Html.AntiForgeryToken()
+                            <div class="mb-3">
+                                <label for="formFile" class="form-label">Product files input</label>
+                                <input class="form-control" type="file" name="files" multiple accept=".xlsx, .xls">
                             </div>
                         </form>
 
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="uploadFilesHandler()">Save
+                            changes</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 @section Scripts {
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            uploadFiles({
-                selector: '#myDropzone',
-                options: {
-                    url: document.querySelector('#form-import').action,
-                    paramName: 'files',
-                    acceptedFiles: '.xlsx,.xls',
-                }
+    <script defer>
+        function uploadFilesHandler()
+        const formElement = document.getElementById("importProductsForm");
+        const url = formElement.action;
+        const files = formElement.querySelector('input[name="files"]').files;
+        const formData = new FormData();
+        formData.append('files', files);
+        const token = document.querySelector(
+            'input[name="__RequestVerificationToken"]'
+        ).value;
+        axios.post(url, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                RequestVerificationToken: token,
+            }
+        })
+            .then((success) => {
+                console.log("success :>> ", success);
+                Swal.fire({
+                    icon: "success",
+                    title: "Success!",
+                    text: success.data,
+                }).then(() => {
+                    location.reload();
+                });
             })
-        });
+            .catch((error) => {
+                console.log("error :>> ", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: error.message,
+                });
+            });
     </script>
-
 }

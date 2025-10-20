@@ -1,4 +1,4 @@
-using Bonjour.Domain.Users;
+using Bonjour.Domain.Helpers;
 using Bonjour.Models;
 using Bonjour.Requests;
 using Microsoft.AspNetCore.Authorization;

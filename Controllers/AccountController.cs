@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using Bonjour.Domain.Users;
+using Bonjour.Domain.Helpers;
 using Bonjour.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;

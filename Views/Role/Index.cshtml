@@ -1,0 +1,111 @@
+@using Newtonsoft.Json
+@model IEnumerable<Bonjour.Models.Role>;
+@{
+    Layout = "_AdminLayout";
+}
+<h1 class="mt-4">Role</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">Role</li>
+</ol>
+<div class="card mt-4">
+    <div class="card-body">
+        <h5 class="card-title">Roles</h5>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var role in Model)
+                {
+                    <tr>
+                        <th scope="row">@role.Id</th>
+                        <td>@role.Name</td>
+                        <td>
+                            <button class="btn" type="button" data-bs-toggle="modal" data-bs-target="#editRoleModal"
+                                data-bs-entity="@JsonConvert.SerializeObject(role)"><i class="fa fa-edit"></i></button>
+                            <button class="btn" type="button" onclick="deleteRoleHandler(@role.Id)"><i
+                                    class="fa fa-trash"></i></button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createRoleModal">
+            Create
+        </button>
+        <form asp-action="Delete" method="post" id="deleteRoleForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="" />
+        </form>
+        <!-- Modal -->
+        @Html.Partial("Create.cshtml", (IEnumerable<Bonjour.Models.Permission>)ViewBag.Permissions)
+    </div>
+</div>
+@section Scripts {
+    <script defer>
+        function createRoleHandler() {
+            const formElement = document.getElementById("createRoleForm");
+            var permissionElements = formElement.querySelectorAll("input[name='Permission']");
+            var permissions = [];
+            permissionElements.forEach(permissionElement => {
+                var action = '';
+                var parentElement = permissionElement.parentElement;
+                var readCheckElement = parentElement.querySelector("input[name='Read']");
+                action += (readCheckElement && readCheckElement.checked ? 'r' : '-');
+                var writeCheckElement = parentElement.querySelector("input[name='Write']");
+                action += (writeCheckElement && writeCheckElement.checked ? 'w' : '-');
+                var createCheckElement = parentElement.querySelector("input[name='Create']");
+                action += (createCheckElement && createCheckElement.checked ? 'c' : '-');
+                permissions.push({
+                    action,
+                    permissionId: permissionElement.value
+                });
+
+
+            });
+            var roleHasPermissionElement = formElement.querySelector("input[name='Permissions']");
+            roleHasPermissionElement.value = JSON.stringify(permissions);
+            console.log(permissions);
+            submitFormData("createRoleForm", [
+                "input[name='Name']",
+                "input[name='Permissions']"
+            ]);
+        }
+        function editRoleHandler() {
+            submitFormData("editRoleForm", [
+                "input[name='id']",
+                "input[name='Name']",
+                "input[name='Permissions']"
+            ]);
+        }
+        function deleteRoleHandler(id) {
+            const formElement = document.getElementById("deleteRoleForm");
+            const hiddenElement = formElement.querySelector('input[name="id"]');
+            hiddenElement.value = id;
+            submitFormData("deleteRoleForm", ["input[name='id']"]);
+        }
+        const modalElement = document.getElementById('editRoleModal');
+        modalElement.addEventListener('show.bs.modal', event => {
+            var formElement = document.getElementById("editRoleForm");
+            // Button that triggered the modal
+            const button = event.relatedTarget;
+            // Extract info from data-bs-* attributes
+            const entity = JSON.parse(button.getAttribute('data-bs-entity'));
+            console.log(entity);
+            [
+                "input[name='id']",
+                "input[name='Name']"
+            ].forEach(selector => {
+                var inputElement = formElement.querySelector(selector);
+                var prop = inputElement.getAttribute("name");
+                prop = prop.charAt(0).toLocaleLowerCase() + prop.slice(1);
+                inputElement.value = entity[prop];
+            });
+        })
+    </script>
+}

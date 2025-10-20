@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Security.Cryptography;
 
-namespace Bonjour.Domain.Users;
+namespace Bonjour.Domain.Helpers;
 
 public class PasswordHasher
 {

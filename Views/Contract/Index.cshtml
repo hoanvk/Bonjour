@@ -1,7 +1,12 @@
+@using Newtonsoft.Json
 @model IEnumerable<Bonjour.Models.Contract>;
 @{
     Layout = "_AdminLayout";
 }
+<h1 class="mt-4">Contract</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">Contract</li>
+</ol>
 <div class="card mt-4">
     <div class="card-body">
         <h5 class="card-title">Contracts</h5>
@@ -13,8 +18,8 @@
                     <th scope="col">Customer</th>
                     <th scope="col">Start Date</th>
                     <th scope="col">End Date</th>
-                    <th>Products</th>
-                    <th>Actions</th>
+                    <th scope="col">Products</th>
+                    <th scope="col">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,8 +33,12 @@
                         <td>@contract.EndDate</td>
                         <td><a asp-controller="ContractProduct" asp-action="Index" asp-route-id="@contract.Id">Products</a>
                         </td>
-                        <td><button class="btn" type="button" onclick="removeContractHandler(@contract.Id)"><i
-                                    class="fa fa-trash"></i></button></td>
+                        <td>
+                            <button class="btn" type="button" data-bs-toggle="modal" data-bs-target="#editContractModal"
+                                data-bs-entity="@JsonConvert.SerializeObject(contract)"><i class="fa fa-edit"></i></button>
+                            <button class="btn" type="button" onclick="deleteContractHandler(@contract.Id)"><i
+                                    class="fa fa-trash"></i></button>
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -44,6 +53,7 @@
         </form>
         <!-- Modal -->
         @Html.Partial("Create.cshtml")
+        @Html.Partial("Edit.cshtml")
     </div>
 </div>
 @section Scripts {
@@ -56,11 +66,41 @@
                 "input[name='EndDate']"
             ]);
         }
-        function removeContractHandler(id) {
-            const form = document.getElementById("deleteContractForm");
-            const contractIdElement = form.querySelector('input[name="id"]');
-            contractIdElement.value = id;
+        function editContractHandler() {
+            submitFormData("editContractForm", [
+                "input[name='id']",
+                "input[name='Name']",
+                "input[name='Customer']",
+                "input[name='StartDate']",
+                "input[name='EndDate']"
+            ]);
+        }
+        function deleteContractHandler(id) {
+            const formElement = document.getElementById("deleteContractForm");
+            const hiddenElement = formElement.querySelector('input[name="id"]');
+            hiddenElement.value = id;
             submitFormData("deleteContractForm", ["input[name='id']"]);
         }
+        const modalElement = document.getElementById('editContractModal');
+        modalElement.addEventListener('show.bs.modal', event => {
+            var formElement = document.getElementById("editContractForm");
+            // Button that triggered the modal
+            const button = event.relatedTarget;
+            // Extract info from data-bs-* attributes
+            const entity = JSON.parse(button.getAttribute('data-bs-entity'));
+            console.log(entity);
+            [
+                "input[name='id']",
+                "input[name='Name']",
+                "input[name='Customer']",
+                "input[name='StartDate']",
+                "input[name='EndDate']"
+            ].forEach(selector => {
+                var inputElement = formElement.querySelector(selector);
+                var prop = inputElement.getAttribute("name");
+                prop = prop.charAt(0).toLocaleLowerCase() + prop.slice(1);
+                inputElement.value = entity[prop];
+            });
+        })
     </script>
 }

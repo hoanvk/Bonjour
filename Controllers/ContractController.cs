@@ -4,6 +4,7 @@ using Bonjour.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Bonjour.Controllers;
 
@@ -29,6 +30,10 @@ public class ContractController : Controller
     public async Task<IActionResult> Create(CreateContractRequest contract)
     {
         logger.LogInformation("Create contract");
+        if (!ModelState.IsValid)
+        {
+            return UnprocessableEntity(ModelState);
+        }
         var _contract = new Contract()
         {
             Name = contract.Name,
@@ -39,6 +44,30 @@ public class ContractController : Controller
         dbContext.Contracts.Add(_contract);
         await dbContext.SaveChangesAsync();
         return Ok("Created contract successfully");
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, CreateContractRequest contract)
+    {
+        logger.LogInformation("Edit contract");
+        if (!ModelState.IsValid)
+        {
+            return UnprocessableEntity(ModelState);
+        }
+        var _contract = await dbContext.Contracts.FindAsync(id);
+        if (_contract == null)
+        {
+            ModelState.AddModelError("Id", "Contract not found");
+            return UnprocessableEntity(ModelState);
+        }
+        _contract.Name = contract.Name;
+        _contract.Customer = contract.Customer;
+        _contract.StartDate = DateTime.Parse(contract.StartDate);
+        _contract.EndDate = DateTime.Parse(contract.EndDate);
+        dbContext.Contracts.Update(_contract);
+        await dbContext.SaveChangesAsync();
+        return Ok("Edited contract successfully");
     }
 
     [HttpPost]

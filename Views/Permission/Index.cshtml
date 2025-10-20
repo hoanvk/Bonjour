@@ -1,0 +1,88 @@
+@using Newtonsoft.Json
+@model IEnumerable<Bonjour.Models.Permission>;
+@{
+    Layout = "_AdminLayout";
+}
+<h1 class="mt-4">Permission</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">Permission</li>
+</ol>
+<div class="card mt-4">
+    <div class="card-body">
+        <h5 class="card-title">Permissions</h5>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var permission in Model)
+                {
+                    <tr>
+                        <th scope="row">@permission.Id</th>
+                        <td>@permission.Name</td>
+                        <td>
+                            <button class="btn" type="button" data-bs-toggle="modal" data-bs-target="#editPermissionModal"
+                                data-bs-entity="@JsonConvert.SerializeObject(permission)"><i
+                                    class="fa fa-edit"></i></button>
+                            <button class="btn" type="button" onclick="deletePermissionHandler(@permission.Id)"><i
+                                    class="fa fa-trash"></i></button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createPermissionModal">
+            Create
+        </button>
+        <form asp-action="Delete" method="post" id="deletePermissionForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="" />
+        </form>
+        <!-- Modal -->
+        @Html.Partial("Create.cshtml")
+    </div>
+</div>
+@section Scripts {
+    <script defer>
+        function createPermissionHandler() {
+            submitFormData("createPermissionForm", [
+                "input[name='Name']"
+            ]);
+        }
+        function editPermissionHandler() {
+            submitFormData("editPermissionForm", [
+                "input[name='id']",
+                "input[name='Name']"
+            ]);
+        }
+        function deletePermissionHandler(id) {
+            const formElement = document.getElementById("deletePermissionForm");
+            const hiddenElement = formElement.querySelector('input[name="id"]');
+            hiddenElement.value = id;
+            submitFormData("deletePermissionForm", ["input[name='id']"]);
+        }
+        const modalElement = document.getElementById('editPermissionModal');
+        modalElement.addEventListener('show.bs.modal', event => {
+            var formElement = document.getElementById("editPermissionForm");
+            // Button that triggered the modal
+            const button = event.relatedTarget;
+            // Extract info from data-bs-* attributes
+            const entity = JSON.parse(button.getAttribute('data-bs-entity'));
+            console.log(entity);
+            [
+                "input[name='id']",
+                "input[name='Name']"
+            ].forEach(selector => {
+                var inputElement = formElement.querySelector(selector);
+                var prop = inputElement.getAttribute("name");
+                prop = prop.charAt(0).toLocaleLowerCase() + prop.slice(1);
+                inputElement.value = entity[prop];
+            });
+        })
+    </script>
+}

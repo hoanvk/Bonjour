@@ -31,14 +31,14 @@ public class ProductController : Controller
         return View("Index", _products);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
         var _product = await dbContext.Products.FindAsync(id);
         return View("Details", _product);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut]
     public async Task<IActionResult> Edit(int id)
     {
         var _productDetail = await dbContext.ProductDetails.FindAsync(id);

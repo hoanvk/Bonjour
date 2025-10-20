@@ -36,7 +36,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Loading", policy => policy.RequireRole("Loading"));
     options.AddPolicy("Unloading", policy => policy.RequireRole("Unloading"));
 });
-builder.Services.AddTransient<Bonjour.Domain.Users.PasswordHasher>();
+builder.Services.AddTransient<Bonjour.Domain.Helpers.PasswordHasher>();
 var app = builder.Build();
 app.UseSerilogRequestLogging();
 // Configure the HTTP request pipeline.
@@ -67,6 +67,7 @@ app.MapHub<RealTimeHub>("/realtimehub");
 JsonConvert.DefaultSettings = () => new JsonSerializerSettings
 {
     Formatting = Formatting.Indented,
-    ContractResolver = new CamelCasePropertyNamesContractResolver()
+    ContractResolver = new CamelCasePropertyNamesContractResolver(),
+    DateFormatString = "yyyy-MM-dd"
 };
 app.Run();

@@ -44,12 +44,13 @@
         </form>
         <!-- Modal -->
         @Html.Partial("Create.cshtml", (IEnumerable<Bonjour.Models.Permission>)ViewBag.Permissions)
+        @Html.Partial("Edit.cshtml", (IEnumerable<Bonjour.Models.Permission>)ViewBag.Permissions)
     </div>
 </div>
 @section Scripts {
     <script defer>
-        function createRoleHandler() {
-            const formElement = document.getElementById("createRoleForm");
+        function beforeSubmit(formId) {
+            const formElement = document.getElementById(formId);
             var permissionElements = formElement.querySelectorAll("input[name='Permission']");
             var permissions = [];
             permissionElements.forEach(permissionElement => {
@@ -65,18 +66,20 @@
                     action,
                     permissionId: permissionElement.value
                 });
-
-
             });
             var roleHasPermissionElement = formElement.querySelector("input[name='Permissions']");
             roleHasPermissionElement.value = JSON.stringify(permissions);
             console.log(permissions);
+        }
+        function createRoleHandler() {
+            beforeSubmit("createRoleForm");
             submitFormData("createRoleForm", [
                 "input[name='Name']",
                 "input[name='Permissions']"
             ]);
         }
         function editRoleHandler() {
+            beforeSubmit("editRoleForm");
             submitFormData("editRoleForm", [
                 "input[name='id']",
                 "input[name='Name']",
@@ -96,7 +99,6 @@
             const button = event.relatedTarget;
             // Extract info from data-bs-* attributes
             const entity = JSON.parse(button.getAttribute('data-bs-entity'));
-            console.log(entity);
             [
                 "input[name='id']",
                 "input[name='Name']"
@@ -105,6 +107,28 @@
                 var prop = inputElement.getAttribute("name");
                 prop = prop.charAt(0).toLocaleLowerCase() + prop.slice(1);
                 inputElement.value = entity[prop];
+            });
+            const url = "@Url.Action("Edit", new { id = "__id" })".replace("__id", entity.id);
+            axios.get(url).then(response => {
+                var rolePermissions = response.data;
+                var permissionElements = formElement.querySelectorAll("input[name='Permission']");
+                permissionElements.forEach(permissionElement => {
+                    var permissionId = permissionElement.value;
+                    var parentElement = permissionElement.parentElement;
+                    var readCheckElement = parentElement.querySelector("input[name='Read']");
+                    var writeCheckElement = parentElement.querySelector("input[name='Write']");
+                    var createCheckElement = parentElement.querySelector("input[name='Create']");
+                    var rolePermission = rolePermissions.find(rp => rp.permissionId == permissionId);
+                    if (rolePermission) {
+                        readCheckElement.checked = rolePermission.action.includes('r');
+                        writeCheckElement.checked = rolePermission.action.includes('w');
+                        createCheckElement.checked = rolePermission.action.includes('c');
+                    } else {
+                        readCheckElement.checked = false;
+                        writeCheckElement.checked = false;
+                        createCheckElement.checked = false;
+                    }
+                });
             });
         })
     </script>

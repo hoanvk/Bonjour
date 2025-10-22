@@ -1,0 +1,37 @@
+<div class="modal fade" id="createShipmentModal" tabindex="-1" aria-labelledby="createShipmentModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="createShipmentModalLabel">Create Shipment</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="row g-3" asp-action="Create" method="post" id="createShipmentForm">
+                    @Html.AntiForgeryToken()
+                    <div class="col-md-12">
+                        <label for="carrier" class="form-label">Carrier</label>
+                        <input type="text" class="form-control" id="carrier" name="carrier" placeholder="carrier">
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    <div class="col-md-12">
+                        <label for="consignee" class="form-label">Consignee</label>
+                        <input type="text" class="form-control" id="consignee" name="consignee" placeholder="consignee">
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="departure" class="form-label">Departure</label>
+                        <input type="text" class="form-control date" id="departure" name="departure">
+                        <div class="invalid-feedback"></div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="createShipmentHandler()">Save
+                    changes</button>
+            </div>
+        </div>
+    </div>
+</div>

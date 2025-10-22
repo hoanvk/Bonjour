@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Bonjour.Models;
 using Bonjour.Requests;
 using Microsoft.AspNetCore.Authorization;
@@ -58,7 +59,37 @@ public class RoleController : Controller
             dbContext.RoleHasPermissions.Add(_roleHasPermission);
         }
         await dbContext.SaveChangesAsync();
-        return Ok(JsonConvert.SerializeObject(_role));
+        return Ok("Created role successfully");
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Edit(int id, [FromForm] CreateRoleRequest role)
+    {
+        if (!ModelState.IsValid)
+        {
+            return UnprocessableEntity(ModelState);
+        }
+        if (dbContext.Roles.Any(r => r.Name == role.Name && r.Id != id))
+        {
+            ModelState.AddModelError(nameof(CreateRoleRequest.Name), "Role name is exists");
+            return UnprocessableEntity(ModelState);
+        }
+        var _role = await dbContext.Roles.FindAsync(id);
+        _role.Name = role.Name;
+
+        dbContext.Roles.Update(_role);
+        dbContext.RoleHasPermissions.RemoveRange(dbContext.RoleHasPermissions.Where(rp => rp.RoleId == id));
+        var roleHasPermissions = JsonConvert.DeserializeObject<CreateRoleHasPermissionRequest[]>(role.Permissions);
+        foreach (var roleHasPermission in roleHasPermissions)
+        {
+            var _roleHasPermission = new RoleHasPermission();
+            _roleHasPermission.Role = _role;
+            _roleHasPermission.PermissionId = roleHasPermission.PermissionId;
+            _roleHasPermission.Action = roleHasPermission.Action;
+            dbContext.RoleHasPermissions.Add(_roleHasPermission);
+        }
+        await dbContext.SaveChangesAsync();
+        return Ok("Edit role successfully");
     }
     [HttpPost]
     public async Task<IActionResult> Delete(int id)
@@ -81,6 +112,6 @@ public class RoleController : Controller
         }
         dbContext.Roles.Remove(_role);
         await dbContext.SaveChangesAsync();
-        return Ok("Deleted successfully");
+        return Ok("Deleted role successfully");
     }
 }

@@ -10,8 +10,11 @@ public class ProductDetails
     public int Id { get; set; }
     [ForeignKey("Product")]
     public int ProductId { get; set; }
-    public string Key { get; set; }
-    public string Value { get; set; }
+    public int SequenceNo { get; set; }
+    public string ShortId { get; set; }
+    public string Status { get; set; }
+
     public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
     public Product Product { get; set; }
 }

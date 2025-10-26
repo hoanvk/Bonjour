@@ -1,0 +1,27 @@
+@model IEnumerable<Bonjour.Dtos.ProductDto>;
+
+@{
+    Layout = "_AdminLayout";
+}
+
+<h1 class="mt-4">QrCode</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item"><a asp-controller="Contract" asp-action="Index">Contract</a></li>
+    <li class="breadcrumb-item"><a asp-controller="ContractProduct" asp-action="Index"
+            asp-route-id="@ViewBag.ContractId">Products</a></li>
+    <li class="breadcrumb-item active">QrCode</li>
+</ol>
+<div class="row g-4">
+    @foreach (var productDto in Model)
+    {
+        <div class=" col-lg-2 col-md-3 col-sm-4">
+            <div class="card">
+                <img src=" @productDto.QrCode" class="card-img-top" alt="qrcode">
+                <div class="card-body">
+                    <h5 class="card-title">@productDto.Code</h5>
+                    <p class="card-text">@productDto.Name</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>

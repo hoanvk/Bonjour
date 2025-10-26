@@ -1,12 +1,9 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Bonjour.Models;
-using OfficeOpenXml;
-using QRCoder;
 using Microsoft.EntityFrameworkCore;
-using Bonjour.Dtos;
 using Microsoft.AspNetCore.Authorization;
-using Bonjour.Domain.Products;
+using Bonjour.Domain.Shipments;
+using MediatR;
 
 namespace Bonjour.Controllers;
 
@@ -16,19 +13,32 @@ public class ShipmentProductController : Controller
     private readonly IConfiguration configuration;
     private readonly ILogger<ShipmentProductController> logger;
     private readonly ApplicationDbContext dbContext;
+    private IMediator mediator;
 
-    public ShipmentProductController(IConfiguration configuration, ILogger<ShipmentProductController> logger, ApplicationDbContext dbContext)
+    public ShipmentProductController(IConfiguration configuration, ILogger<ShipmentProductController> logger, ApplicationDbContext dbContext, IMediator mediator)
     {
         this.configuration = configuration;
         this.logger = logger;
         this.dbContext = dbContext;
+        this.mediator = mediator;
     }
 
     [HttpGet("/Shipment/{id}/Product")]
     public async Task<IActionResult> Index(int id)
     {
-        var _products = await dbContext.ShipmentProducts.Where(product => product.ShipmentId == id).ToListAsync();
-        ViewBag.id = id;
+        var _products = await dbContext.ShipmentProducts.Join(dbContext.Products,
+        t1 => t1.ProductId,
+        t2 => t2.Id,
+        (t1, t2) => new { ShipmentProduct = t1, Product = t2 }).Where(m => m.ShipmentProduct.ShipmentId == id).Select(m => new ShipmentProductDto(
+            m.ShipmentProduct.Id,
+            m.Product.Code,
+            m.Product.Name,
+            m.ShipmentProduct.Loaded,
+            m.ShipmentProduct.Unloaded,
+            m.ShipmentProduct.CreatedAt,
+            m.ShipmentProduct.UpdatedAt
+        )).ToListAsync();
+        ViewBag.ShipmentId = id;
         return View("Index", _products);
     }
 
@@ -54,55 +64,42 @@ public class ShipmentProductController : Controller
                     await file.CopyToAsync(stream);
                 }
                 // For non-commercial use, you can use LicenseContext.NonCommercial
-                ExcelPackage.License.SetNonCommercialPersonal("Bonjour");
-
-                FileInfo fileInfo = new FileInfo(filePath);
-
-                try
-                {
-                    using (ExcelPackage package = new ExcelPackage(fileInfo))
-                    {
-                        // Get the first worksheet
-                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
-
-                        // Determine the range of used cells
-                        int startRow = worksheet.Dimension.Start.Row;
-                        int endRow = worksheet.Dimension.End.Row;
-                        int startCol = worksheet.Dimension.Start.Column;
-                        int endCol = worksheet.Dimension.End.Column;
-
-                        var _shipmentProducts = await dbContext.ShipmentProducts.Where(p => p.ShipmentId == id).ToListAsync();
-                        if (_shipmentProducts != null && _shipmentProducts.Any())
-                        {
-                            dbContext.ShipmentProducts.RemoveRange(_shipmentProducts);
-                        }
-                        // Loop through rows (assuming first row is header)
-                        for (int rowNum = startRow + 1; rowNum <= endRow; rowNum++)
-                        {
-                            var _product = await dbContext.Products.FirstOrDefaultAsync(m => m.Code == worksheet.Cells[rowNum, startCol].Text);
-                            if (_product == null)
-                            {
-                                return UnprocessableEntity("Product not found");
-                            }
-                            var _shipmentProduct = new ShipmentProduct();
-                            // Assuming columns are in a specific order: Name, Age, City
-                            _shipmentProduct.Loading = int.Parse(worksheet.Cells[rowNum, startCol + 1].Text);
-                            _shipmentProduct.Unloading = int.Parse(worksheet.Cells[rowNum, startCol + 2].Text);
-                            _shipmentProduct.ShipmentId = id;
-                            dbContext.ShipmentProducts.Update(_shipmentProduct);
-                        }
-                        await dbContext.SaveChangesAsync();
-
-                    }
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "Error when save to db");
-                }
-                fileInfo.Delete();
+                await mediator.Send(new ImportShipmentProductRequest(id, filePath));
             }
             return Ok("Files uploaded successfully!");
         }
         return BadRequest("No files selected.");
+    }
+
+    [HttpPost("/Shipment/{id}/Loaded/Confirm")]
+    [Authorize(Policy = "Loading")]
+    public async Task<IActionResult> ConfirmLoaded(int id)
+    {
+        var _shipment = await dbContext.Shipments.FindAsync(id);
+        if (_shipment == null)
+        {
+            ModelState.AddModelError("id", "Shipment not found");
+            return UnprocessableEntity(ModelState);
+        }
+        _shipment.Status = ShipmentStatus.IN_TRANSIT.Code;
+        dbContext.Shipments.Update(_shipment);
+        await dbContext.SaveChangesAsync();
+        return Ok("Shipment status updated to In Transit");
+    }
+
+    [HttpPost("/Shipment/{id}/Unloaded/Confirm")]
+    [Authorize(Policy = "Unloading")]
+    public async Task<IActionResult> ConfirmUnloaded(int id)
+    {
+        var _shipment = await dbContext.Shipments.FindAsync(id);
+        if (_shipment == null)
+        {
+            ModelState.AddModelError("id", "Shipment not found");
+            return UnprocessableEntity(ModelState);
+        }
+        _shipment.Status = ShipmentStatus.DELIVERED.Code;
+        dbContext.Shipments.Update(_shipment);
+        await dbContext.SaveChangesAsync();
+        return Ok("Shipment status updated to Delivered");
     }
 }

@@ -1,0 +1,8 @@
+@model IEnumerable<Bonjour.Models.Role>;
+<input type="hidden" name="Roles" />
+<select class="form-select" multiple name="RoleId">
+    @foreach (var role in Model)
+    {
+        <option value="@role.Id">@role.Name</option>
+    }
+</select>

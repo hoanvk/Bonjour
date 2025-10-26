@@ -37,6 +37,10 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Unloading", policy => policy.RequireRole("Unloading"));
 });
 builder.Services.AddTransient<Bonjour.Domain.Helpers.PasswordHasher>();
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+});
 var app = builder.Build();
 app.UseSerilogRequestLogging();
 // Configure the HTTP request pipeline.

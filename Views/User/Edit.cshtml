@@ -1,0 +1,37 @@
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="editUserModalLabel">Edit User</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="row g-3" asp-action="Edit" method="post" id="editUserForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="Id" value="" />
+                    <div class="col-md-12">
+                        <label for="Name" class="form-label">Name</label>
+                        <input type="text" class="form-control" name="Name" placeholder="Joe Doe">
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    <div class="col-md-12">
+                        <label for="Username" class="form-label">Username</label>
+                        <input type="text" class="form-control" name="Username" placeholder="joedoe">
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    <div class="col-md-12">
+                        <label for="Role" class="form-label">User Role</label>
+                        @await Component.InvokeAsync("RoleList")
+                        <div class="invalid-feedback"></div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="editUserHandler()">Save
+                    changes</button>
+            </div>
+        </div>
+    </div>
+</div>

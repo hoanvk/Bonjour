@@ -1,0 +1,77 @@
+@model int
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = "_AdminLayout";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <div id="reader" width="600px"></div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/realtimehub")
+            .withAutomaticReconnect()
+            .build();
+
+        connection.start().catch(err => console.error(err));
+
+        function onScanSuccess(decodedText, decodedResult) {
+            // handle the scanned code as you like, for example:
+            console.log(`Code matched = ${decodedText}`, decodedResult);
+            html5QrcodeScanner.pause();
+            /*
+            Swal.fire({
+                title: "Good job!",
+                text: `Code matched = ${decodedText}`,
+                icon: "success"
+            }).then(() => {
+                connection.invoke("SendNotification", decodedText).catch(err => console.error(err));
+                html5QrcodeScanner.resume();
+            });
+            */
+            createHttpPost("@Url.Action("Create", "Delivery", new { Id = Model })", { message: decodedText }, {
+                onSuccess: function (response) {
+                    Swal.fire({
+                        title: "Good job!",
+                        html: `<b>${response.data.code}</b><div>${response.data.name}</div>`,
+                        icon: "success"
+                    }).then(() => {
+                        const message = {
+                            id: response.data.id,
+                            quantity: response.data.quantity,
+                            delivery: response.data.delivery,
+                            updatedAt: response.data.updatedAt
+                        }
+                        connection.invoke("SendNotification", message).catch(err => console.error(err));
+                        html5QrcodeScanner.resume();
+                    });
+                },
+                onError: function (error) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: error.message
+                    }).then(() => {
+                        html5QrcodeScanner.resume();
+                    });
+                }
+            });
+
+        }
+
+        function onScanFailure(error) {
+            // handle scan failure, usually better to ignore and keep scanning.
+            console.warn(`Code scan error = ${error}`);
+        }
+
+        let html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+    </script>
+
+}

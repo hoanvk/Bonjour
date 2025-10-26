@@ -40,10 +40,22 @@ public class AccountController : Controller
         logger.LogInformation("User {Password} found in database.", _user.Password);
         if (passwordHasher.VerifyPassword(account.Password, _user.Password, _user.Salt))
         {
+            var _roles = await dbContext.UserHasRoles.Where(m => m.UserId == _user.Id)
+                .Join(dbContext.Roles,
+                t1 => t1.RoleId,
+                t2 => t2.Id,
+                (t1, t2) => t2).ToListAsync();
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, account.Username)
             };
+            logger.LogInformation("User {Username} has {RoleCount} roles", account.Username, _roles.Count);
+            foreach (var _role in _roles)
+            {
+                logger.LogInformation("User {Username} has role {Role}", account.Username, _role.Name);
+                claims.Add(new Claim(ClaimTypes.Role, _role.Name));
+            }
+
             var claimsIdentity = new ClaimsIdentity(claims, "cookie");
             await HttpContext.SignInAsync("cookie", new ClaimsPrincipal(claimsIdentity));
             return RedirectToAction("Index", "Home");

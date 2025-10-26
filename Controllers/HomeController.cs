@@ -3,6 +3,7 @@ using Bonjour;
 using Microsoft.AspNetCore.Mvc;
 using Bonjour.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics;
 
 namespace Bonjour.Controllers;
 
@@ -41,6 +42,8 @@ public class HomeController : Controller
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
+        var exceptionHandlerPathFeature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
+        logger.LogWarning(exceptionHandlerPathFeature.Error.Message);
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }

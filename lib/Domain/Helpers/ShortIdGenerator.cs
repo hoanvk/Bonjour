@@ -1,4 +1,4 @@
-namespace Bonjour.Domain.Products;
+namespace Bonjour.Domain.Helpers;
 
 public class ShortIdGenerator
 {

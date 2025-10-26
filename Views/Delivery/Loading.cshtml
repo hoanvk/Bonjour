@@ -1,0 +1,98 @@
+﻿@model IEnumerable<Bonjour.Domain.Shipments.ShipmentProductDto>;
+@{
+    ViewData["Title"] = "Product Page";
+    Layout = "_AdminLayout";
+}
+<h1 class="mt-4">Product</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item"><a asp-controller="Shipment" asp-action="Index">Shipment</a></li>
+    <li class="breadcrumb-item active">Product</li>
+</ol>
+<div class="card mt-4">
+    <div class="card-body">
+        <table class="table table-dark table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Code</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Loaded</th>
+                    <th scope="col">Unloaded</th>
+                    <th scope="col">Created At</th>
+                    <th scope="col">Updated At</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model)
+                {
+                    <tr id="@product.Id">
+                        <td scope="row" data-product-column="id">
+                            <i class="fa-regular fa-circle"></i>
+                        </td>
+                        <td>@product.Code</td>
+                        <td>@product.Name</td>
+                        <td data-product-column="loaded">@product.Loaded</td>
+                        <td>@product.Unloaded</td>
+                        <td>@product.CreatedAt</td>
+                        <td data-product-column="updated_at">@(product.UpdatedAt.HasValue ?
+                                                product.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") :
+                                                string.Empty)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <a asp-controller="Delivery" asp-action="ScanLoading" asp-route-id="@ViewBag.ShipmentId"
+            class="btn btn-secondary">Scan Loading</a>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loadProductsModal">
+            Confirm Load
+        </button>
+        <!-- Modal -->
+
+    </div>
+</div>
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
+    <script defer>
+        document.addEventListener('DOMContentLoaded', function () {
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/realtimehub")
+                .withAutomaticReconnect()
+                .build();
+
+            connection.on("ReceiveNotification", (product) => {
+                console.log(`Notification: ${JSON.stringify(product)}`);
+                var productElement = document.getElementById(product.id);
+                console.log(productElement);
+                if (productElement) {
+                    var loadedColumn = productElement.querySelector('[data-product-column="loaded"]');
+                    updateContentAndFlash(loadedColumn, product.loaded);
+                    var updatedAtColumn = productElement.querySelector('[data-product-column="updated_at"]');
+                    updateContentAndFlash(updatedAtColumn, product.updatedAt);
+                }
+                else {
+
+                }
+            });
+
+            connection.start().catch(err => console.error(err));
+
+            function sendNotification() {
+                const message = document.getElementById("product_id").value;
+                connection.invoke("SendNotification", message).catch(err => console.error(err));
+            }
+
+        });
+
+        function updateContentAndFlash(elementToFlash, newContent) {
+            elementToFlash.textContent = newContent;
+            elementToFlash.classList.add('flash-on-update');
+
+            // Remove the class after the animation duration to allow re-triggering
+            setTimeout(() => {
+                elementToFlash.classList.remove('flash-on-update');
+            }, 500); // Match animation duration
+        }
+    </script>
+
+}

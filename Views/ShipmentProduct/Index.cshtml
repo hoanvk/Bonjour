@@ -1,0 +1,43 @@
+﻿@model IEnumerable<Bonjour.Domain.Shipments.ShipmentProductDto>;
+@{
+    ViewData["Title"] = "Product Page";
+    Layout = "_AdminLayout";
+}
+<h1 class="mt-4">Product</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item"><a asp-controller="Shipment" asp-action="Index">Shipment</a></li>
+    <li class="breadcrumb-item active">Product</li>
+</ol>
+<div class="card mt-4">
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Code</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Loaded</th>
+                    <th scope="col">Unloaded</th>
+                    <th scope="col">Created At</th>
+                    <th scope="col">Updated At</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model)
+                {
+                    <tr id="@product.Id">
+                        <td>@product.Id</td>
+                        <td>@product.Code</td>
+                        <td>@product.Name</td>
+                        <td>@product.Loaded</td>
+                        <td>@product.Unloaded</td>
+                        <td>@product.CreatedAt</td>
+                        <td>@(product.UpdatedAt.HasValue ?
+                                                product.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") :
+                                                string.Empty)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

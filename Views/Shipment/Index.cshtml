@@ -2,6 +2,11 @@
 @{
     Layout = "_AdminLayout";
 }
+<h1 class="mt-4">Product</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item"><a asp-controller="Shipment" asp-action="Index">Shipment</a></li>
+    <li class="breadcrumb-item active">Product</li>
+</ol>
 <div class="card mt-4">
     <div class="card-body">
         <h5 class="card-title">Shipments</h5>
@@ -12,6 +17,7 @@
                     <th scope="col">Carrier</th>
                     <th scope="col">Consignee</th>
                     <th scope="col">Departure</th>
+                    <th scope="col">Status</th>
                     <th>Products</th>
                     <th>Actions</th>
                 </tr>
@@ -24,7 +30,9 @@
                         <td>@shipment.Carrier</td>
                         <td>@shipment.Consignee</td>
                         <td>@shipment.Departure</td>
-                        <td><a asp-controller="Product" asp-action="Index" asp-route-id="@shipment.Id">Products</a></td>
+                        <td>@shipment.Status</td>
+                        <td><a asp-controller="ShipmentProduct" asp-action="Index" asp-route-id="@shipment.Id">Products</a>
+                        </td>
                         <td><button class="btn" type="button" onclick="deleteShipmentHandler(@shipment.Id)"><i
                                     class="fa fa-trash"></i></button></td>
                     </tr>

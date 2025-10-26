@@ -41,6 +41,8 @@
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#importFileModal">
             Import
         </button>
+        <a class="btn btn-secondary" asp-action="Print" asp-controller="ContractProduct"
+            asp-route-id="@ViewBag.ContractId">Print QrCode</a>
 
         <!-- Modal -->
         @Html.Partial("Import.cshtml")

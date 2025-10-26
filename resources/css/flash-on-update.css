@@ -13,3 +13,7 @@
 .flash-on-update {
 	animation: flashEffect 0.5s ease-in-out; /* Adjust duration and timing */
 }
+
+.modal-footer {
+	border-top: 0 none;
+}

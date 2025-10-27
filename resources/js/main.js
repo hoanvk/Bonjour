@@ -43,3 +43,50 @@ window.addEventListener("DOMContentLoaded", (event) => {
 	});
 	Menu();
 });
+
+window.createHttpPost = function (url, data, { onSuccess, onError } = {}) {
+	axios
+		.post(url, data)
+		.then(function (response) {
+			Swal.fire({
+				title: "Good job!",
+				html: `<b>${response.data.code}</b><div>${response.data.name}</div>`,
+				icon: "success",
+			}).then(() => {
+				if (onSuccess) {
+					onSuccess(response);
+				}
+			});
+		})
+		.catch(function (error) {
+			Swal.fire({
+				icon: "error",
+				title: "Oops...",
+				text: error.message,
+			}).then(() => {
+				if (onError) {
+					onError(error);
+				}
+			});
+		});
+};
+window.createHttpGet = function (url, { onSuccess, onError } = {}) {
+	axios
+		.get(url)
+		.then(function (response) {
+			if (onSuccess) {
+				onSuccess(response);
+			}
+		})
+		.catch(function (error) {
+			Swal.fire({
+				icon: "error",
+				title: "Oops...",
+				text: error.message,
+			}).then(() => {
+				if (onError) {
+					onError(error);
+				}
+			});
+		});
+};

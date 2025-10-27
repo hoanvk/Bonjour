@@ -12,7 +12,7 @@
         <div class="card bg-primary text-white mb-4">
             <div class="card-body">Loading</div>
             <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-white stretched-link" asp-action="ScanLoading" asp-controller="Delivery"
+                <a class="small text-white stretched-link" asp-action="Scan" asp-controller="Loading"
                     asp-route-id="null">View Details</a>
                 <div class="small text-white"><i class="fas fa-angle-right"></i></div>
             </div>
@@ -22,7 +22,7 @@
         <div class="card bg-warning text-white mb-4">
             <div class="card-body">Unloading</div>
             <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-white stretched-link" asp-action="ScanUnloading" asp-controller="Delivery"
+                <a class="small text-white stretched-link" asp-action="Scan" asp-controller="Unloading"
                     asp-route-id="null">View Details</a>
                 <div class="small text-white"><i class="fas fa-angle-right"></i></div>
             </div>
@@ -32,7 +32,7 @@
         <div class="card bg-success text-white mb-4">
             <div class="card-body">Delivered</div>
             <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-white stretched-link" href="#">View Details</a>
+                <a class="small text-white stretched-link" asp-action="Index" asp-controller="Shipment">View Details</a>
                 <div class="small text-white"><i class="fas fa-angle-right"></i></div>
             </div>
         </div>

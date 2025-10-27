@@ -10,20 +10,20 @@ using Newtonsoft.Json.Serialization;
 
 namespace Bonjour.Controllers;
 
-public class DeliveryController : Controller
+public class UnloadingController : Controller
 {
     private readonly IConfiguration configuration;
-    private readonly ILogger<DeliveryController> logger;
+    private readonly ILogger<UnloadingController> logger;
     private readonly ApplicationDbContext dbContext;
 
-    public DeliveryController(IConfiguration configuration, ILogger<DeliveryController> logger, ApplicationDbContext dbContext)
+    public UnloadingController(IConfiguration configuration, ILogger<UnloadingController> logger, ApplicationDbContext dbContext)
     {
         this.configuration = configuration;
         this.logger = logger;
         this.dbContext = dbContext;
     }
 
-    [HttpPost("/Shipment/{id}/Product/Create")]
+    [HttpPost("/Unloading/{id}/Product/Create")]
     public async Task<IActionResult> Create(int id, [FromBody] DeliveryRequest request)
     {
 
@@ -45,37 +45,19 @@ public class DeliveryController : Controller
             ModelState.AddModelError("message", $"Product {message} not found");
             return UnprocessableEntity(ModelState);
         }
-        var _product = await dbContext.Products.FindAsync(_productDetail.ProductId);
 
         var productStatus = new ProductStatus(_productDetail.Status);
         var shipmentStatus = new ShipmentStatus(_shipment.Status);
-        if (productStatus == ProductStatus.AVAILABLE && shipmentStatus == ShipmentStatus.PENDING)
+        if (shipmentStatus != ShipmentStatus.IN_TRANSIT)
         {
-            _productDetail.Status = ProductStatus.LOADED.Code;
-            _product.Delivery++;
-            var _shipmentProduct = await dbContext.ShipmentProducts.FirstOrDefaultAsync(sp => sp.ProductId == _product.Id && sp.ShipmentId == id);
-            if (_shipmentProduct != null)
-            {
-                _shipmentProduct = new ShipmentProduct()
-                {
-                    ShipmentId = id,
-                    ProductId = _product.Id,
-                    Loaded = 1,
-                    Unloaded = 0
-                };
-                dbContext.ShipmentProducts.Add(_shipmentProduct);
-            }
-            else
-            {
-                _shipmentProduct.Loaded = _shipmentProduct.Loaded + 1;
-                _shipmentProduct.UpdatedAt = DateTime.Now;
-                dbContext.ShipmentProducts.Update(_shipmentProduct);
-            }
+            ModelState.AddModelError("message", $"Shipment {id} should be in IN_TRANSIT status");
+            return UnprocessableEntity(ModelState);
         }
-        else if (productStatus == ProductStatus.LOADED && shipmentStatus == ShipmentStatus.IN_TRANSIT)
+        var _product = await dbContext.Products.FindAsync(_productDetail.ProductId);
+        var _shipmentProduct = await dbContext.ShipmentProducts.FirstOrDefaultAsync(sp => sp.ProductId == _product.Id && sp.ShipmentId == id);
+        if (productStatus == ProductStatus.LOADED)
         {
             _productDetail.Status = ProductStatus.UNLOADED.Code;
-            var _shipmentProduct = await dbContext.ShipmentProducts.FirstOrDefaultAsync(sp => sp.ProductId == _product.Id && sp.ShipmentId == id);
             _shipmentProduct.Unloaded = _shipmentProduct.Unloaded + 1;
             _shipmentProduct.UpdatedAt = DateTime.Now;
             dbContext.ShipmentProducts.Update(_shipmentProduct);
@@ -91,35 +73,16 @@ public class DeliveryController : Controller
             _product.Id,
             _product.Code,
             _product.Name,
-            _product.Quantity,
-            _product.Delivery,
-            UpdatedAt = _product.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss")
+            _shipmentProduct.Loaded,
+            _shipmentProduct.Unloaded,
+            CreatedAt = _shipmentProduct.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss"),
+            UpdatedAt = _shipmentProduct.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss")
         }));
     }
-    [HttpGet("/Delivery/{id}/Loading/Scan")]
-    [Authorize(Roles = "Loading")]
-    public IActionResult ScanLoading(int? id)
-    {
-        int shipmentId = 0;
-        if (!id.HasValue)
-        {
-            var _pendingShipment = dbContext.Shipments.Where(s => s.Status == ShipmentStatus.PENDING.Code).OrderBy(s => s.Id).FirstOrDefault();
-            if (_pendingShipment == null)
-            {
-                return RedirectToAction("Index", "Shipment");
-            }
-            shipmentId = _pendingShipment.Id;
-        }
-        else
-        {
-            shipmentId = id.Value;
-        }
-        return View("Scan", shipmentId);
-    }
 
-    [HttpGet("/Delivery/{id}/Unloading/Scan")]
+    [HttpGet("/Unloading/{id}/Product/Scan")]
     [Authorize(Roles = "Unloading")]
-    public IActionResult ScanUnloading(int? id)
+    public IActionResult Scan(int? id)
     {
         int shipmentId = 0;
         if (!id.HasValue)

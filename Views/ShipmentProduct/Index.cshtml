@@ -40,4 +40,10 @@
             </tbody>
         </table>
     </div>
+    <div class="card-footer">
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a asp-controller="ShipmentProduct" asp-action="Export" asp-route-id="@ViewBag.ShipmentId"
+                class="btn btn-primary me-md-2" style="width: 100px;" role="button">Export</a>
+        </div>
+    </div>
 </div>

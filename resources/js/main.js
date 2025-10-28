@@ -70,6 +70,7 @@ window.createHttpPost = function (url, data, { onSuccess, onError } = {}) {
 			});
 		});
 };
+
 window.createHttpGet = function (url, { onSuccess, onError } = {}) {
 	axios
 		.get(url)
@@ -89,4 +90,20 @@ window.createHttpGet = function (url, { onSuccess, onError } = {}) {
 				}
 			});
 		});
+};
+
+window.ConfirmDialog = function (title, message, onConfirmed) {
+	Swal.fire({
+		title,
+		text: message,
+		icon: "warning",
+		showCancelButton: true,
+		confirmButtonColor: "#3085d6",
+		cancelButtonColor: "#d33",
+		confirmButtonText: "Yes, confirm it!",
+	}).then((result) => {
+		if (result.isConfirmed) {
+			onConfirmed();
+		}
+	});
 };

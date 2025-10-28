@@ -23,6 +23,36 @@ public class LoadingController : Controller
         this.dbContext = dbContext;
     }
 
+    [HttpGet("/Loading/{id}/Product")]
+    [Authorize(Roles = "Loading")]
+    public async Task<IActionResult> Index(int? id)
+    {
+        if (!id.HasValue)
+        {
+            var _pendingShipment = dbContext.Shipments.Where(s => s.Status == ShipmentStatus.PENDING.Code).OrderBy(s => s.Id).FirstOrDefault();
+            if (_pendingShipment == null)
+            {
+                return RedirectToAction("Index", "Shipment");
+            }
+            return RedirectToAction("Index", new { id = _pendingShipment.Id });
+        }
+
+        var _products = await dbContext.ShipmentProducts.Join(dbContext.Products,
+         t1 => t1.ProductId,
+         t2 => t2.Id,
+         (t1, t2) => new { ShipmentProduct = t1, Product = t2 }).Where(m => m.ShipmentProduct.ShipmentId == id).Select(m => new ShipmentProductDto(
+             m.Product.Id,
+             m.Product.Code,
+             m.Product.Name,
+             m.ShipmentProduct.Loaded,
+             m.ShipmentProduct.Unloaded,
+             m.ShipmentProduct.CreatedAt,
+             m.ShipmentProduct.UpdatedAt
+         )).ToListAsync();
+        ViewBag.ShipmentId = id;
+        return View("Index", _products);
+    }
+
     [HttpPost("/Loading/{id}/Product")]
     public async Task<IActionResult> Create(int id, [FromBody] DeliveryRequest request)
     {
@@ -94,23 +124,24 @@ public class LoadingController : Controller
     }
     [HttpGet("/Loading/{id}/Product/Scan")]
     [Authorize(Roles = "Loading")]
-    public IActionResult Scan(int? id)
+    public IActionResult Scan(int id)
     {
-        int shipmentId = 0;
-        if (!id.HasValue)
-        {
-            var _pendingShipment = dbContext.Shipments.Where(s => s.Status == ShipmentStatus.PENDING.Code).OrderBy(s => s.Id).FirstOrDefault();
-            if (_pendingShipment == null)
-            {
-                return RedirectToAction("Index", "Shipment");
-            }
-            shipmentId = _pendingShipment.Id;
-        }
-        else
-        {
-            shipmentId = id.Value;
-        }
-        return View("Scan", shipmentId);
+        return View("Scan", id);
     }
 
+    [HttpPost("/Loading/{id}/Product/Confirm")]
+    [Authorize(Policy = "Loading")]
+    public async Task<IActionResult> Confirm(int id)
+    {
+        var _shipment = await dbContext.Shipments.FindAsync(id);
+        if (_shipment == null)
+        {
+            ModelState.AddModelError("id", "Shipment not found");
+            return UnprocessableEntity(ModelState);
+        }
+        _shipment.Status = ShipmentStatus.IN_TRANSIT.Code;
+        dbContext.Shipments.Update(_shipment);
+        await dbContext.SaveChangesAsync();
+        return Ok("Shipment status updated to In Transit");
+    }
 }

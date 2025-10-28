@@ -71,35 +71,12 @@ public class ShipmentProductController : Controller
         return BadRequest("No files selected.");
     }
 
-    [HttpPost("/Shipment/{id}/Loaded/Confirm")]
-    [Authorize(Policy = "Loading")]
-    public async Task<IActionResult> ConfirmLoaded(int id)
+    [HttpGet("/Shipment/{id}/Product/Export")]
+    public async Task<IActionResult> Export(int id)
     {
-        var _shipment = await dbContext.Shipments.FindAsync(id);
-        if (_shipment == null)
-        {
-            ModelState.AddModelError("id", "Shipment not found");
-            return UnprocessableEntity(ModelState);
-        }
-        _shipment.Status = ShipmentStatus.IN_TRANSIT.Code;
-        dbContext.Shipments.Update(_shipment);
-        await dbContext.SaveChangesAsync();
-        return Ok("Shipment status updated to In Transit");
-    }
-
-    [HttpPost("/Shipment/{id}/Unloaded/Confirm")]
-    [Authorize(Policy = "Unloading")]
-    public async Task<IActionResult> ConfirmUnloaded(int id)
-    {
-        var _shipment = await dbContext.Shipments.FindAsync(id);
-        if (_shipment == null)
-        {
-            ModelState.AddModelError("id", "Shipment not found");
-            return UnprocessableEntity(ModelState);
-        }
-        _shipment.Status = ShipmentStatus.DELIVERED.Code;
-        dbContext.Shipments.Update(_shipment);
-        await dbContext.SaveChangesAsync();
-        return Ok("Shipment status updated to Delivered");
+        logger.LogInformation("Export shipment products");
+        var fileContent = await mediator.Send(new ExportShipmentProductRequest(id));
+        var fileName = $"shipment_{id}_products.xlsx";
+        return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
     }
 }

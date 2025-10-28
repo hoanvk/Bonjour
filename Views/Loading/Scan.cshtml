@@ -36,13 +36,7 @@
             */
             createHttpPost("@Url.Action("Create", "Loading", new { Id = Model })", { message: decodedText }, {
                 onSuccess: function (response) {
-                    const message = {
-                        id: response.data.id,
-                        quantity: response.data.quantity,
-                        delivery: response.data.delivery,
-                        updatedAt: response.data.updatedAt
-                    }
-                    connection.invoke("SendNotification", message).catch(err => console.error(err));
+                    connection.invoke("SendNotification", response.data).catch(err => console.error(err));
                     html5QrcodeScanner.resume();
                 },
                 onError: function (error) {

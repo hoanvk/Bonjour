@@ -23,6 +23,17 @@ public class UnloadingController : Controller
         this.dbContext = dbContext;
     }
 
+    [HttpGet("/Unloading")]
+    [Authorize(Roles = "Unloading")]
+    public IActionResult Index()
+    {
+        var shipments = dbContext.Shipments
+            .Where(s => s.Status == ShipmentStatus.IN_TRANSIT.Code)
+            .OrderBy(s => s.Id)
+            .ToList();
+        return View("Index", shipments);
+    }
+
     [HttpPost("/Unloading/{id}/Product/Create")]
     public async Task<IActionResult> Create(int id, [FromBody] DeliveryRequest request)
     {
@@ -99,5 +110,21 @@ public class UnloadingController : Controller
             shipmentId = id.Value;
         }
         return View("Scan", shipmentId);
+    }
+
+    [HttpPost("/Unloading/{id}/Product/Confirm")]
+    [Authorize(Policy = "Unloading")]
+    public async Task<IActionResult> Confirm(int id)
+    {
+        var _shipment = await dbContext.Shipments.FindAsync(id);
+        if (_shipment == null)
+        {
+            ModelState.AddModelError("id", "Shipment not found");
+            return UnprocessableEntity(ModelState);
+        }
+        _shipment.Status = ShipmentStatus.DELIVERED.Code;
+        dbContext.Shipments.Update(_shipment);
+        await dbContext.SaveChangesAsync();
+        return Ok("Shipment status updated to Delivered");
     }
 }

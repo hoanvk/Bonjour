@@ -10,7 +10,7 @@
 </ol>
 <div class="card mt-4">
     <div class="card-body">
-        <table class="table table-dark table-striped">
+        <table class="table table-dark table-striped" id="products">
             <thead>
                 <tr>
                     <th scope="col">#</th>
@@ -26,28 +26,30 @@
                 @foreach (var product in Model)
                 {
                     <tr id="@product.Id">
-                        <td scope="row" data-product-column="id">
+                        <td scope="row" data-column="id">
                             <i class="fa-regular fa-circle"></i>
                         </td>
                         <td>@product.Code</td>
                         <td>@product.Name</td>
-                        <td data-product-column="loaded">@product.Loaded</td>
+                        <td data-column="loaded">@product.Loaded</td>
                         <td>@product.Unloaded</td>
                         <td>@product.CreatedAt</td>
-                        <td data-product-column="updated_at">@(product.UpdatedAt.HasValue ?
+                        <td data-column="updated_at">@(product.UpdatedAt.HasValue ?
                                                 product.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") :
                                                 string.Empty)</td>
                     </tr>
                 }
             </tbody>
         </table>
-        <a asp-controller="Delivery" asp-action="ScanLoading" asp-route-id="@ViewBag.ShipmentId"
-            class="btn btn-secondary">Scan Loading</a>
-        <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loadProductsModal">
-            Confirm Load
-        </button>
-        <!-- Modal -->
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a asp-controller="Loading" asp-action="Scan" asp-route-id="@ViewBag.ShipmentId"
+                class="btn btn-primary me-md-2" style="width: 100px;" role="button">Scan</a>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary" style="width: 100px;" onclick="confirmLoadedHandler()">
+                Confirm
+            </button>
+            <!-- Modal -->
+        </div>
 
     </div>
 </div>
@@ -59,19 +61,37 @@
                 .withUrl("/realtimehub")
                 .withAutomaticReconnect()
                 .build();
-
+            const tableElement = document.getElementById("products");
             connection.on("ReceiveNotification", (product) => {
                 console.log(`Notification: ${JSON.stringify(product)}`);
-                var productElement = document.getElementById(product.id);
-                console.log(productElement);
-                if (productElement) {
-                    var loadedColumn = productElement.querySelector('[data-product-column="loaded"]');
+                var rowElement = document.getElementById(product.id);
+                if (rowElement) {
+                    console.log('updated');
+                    var loadedColumn = rowElement.querySelector('[data-column="loaded"]');
                     updateContentAndFlash(loadedColumn, product.loaded);
-                    var updatedAtColumn = productElement.querySelector('[data-product-column="updated_at"]');
+                    var updatedAtColumn = rowElement.querySelector('[data-column="updated_at"]');
                     updateContentAndFlash(updatedAtColumn, product.updatedAt);
                 }
                 else {
-
+                    console.log('inserted');
+                    let rowElement = tableElement.insertRow(-1);
+                    let idCellElement = rowElement.insertCell(0);
+                    idCellElement.innerHTML = '<i class="fa-regular fa-circle"></i>';
+                    idCellElement.setAttribute('data-column', 'id');
+                    let codeCellElement = rowElement.insertCell(1);
+                    codeCellElement.innerText = product.code;
+                    let nameCellElement = rowElement.insertCell(2);
+                    nameCellElement.innerText = product.name;
+                    let loadedCellElement = rowElement.insertCell(3);
+                    loadedCellElement.innerText = product.loaded;
+                    loadedCellElement.setAttribute('data-column', 'loaded');
+                    let unloadedCellElement = rowElement.insertCell(4);
+                    unloadedCellElement.innerText = product.unloaded;
+                    let createdAtCellElement = rowElement.insertCell(5);
+                    createdAtCellElement.innerText = product.createdAt;
+                    let updatedAtCellElement = rowElement.insertCell(6);
+                    updatedAtCellElement.innerText = product.updatedAt;
+                    updatedAtCellElement.setAttribute('data-column', 'updated_at');
                 }
             });
 
@@ -92,6 +112,16 @@
             setTimeout(() => {
                 elementToFlash.classList.remove('flash-on-update');
             }, 500); // Match animation duration
+        }
+
+        function confirmLoadedHandler() {
+            ConfirmDialog(
+                'Confirm shipment loaded',
+                'Are you sure you want to confirm loaded products?',
+                () => {
+                    const url = "@Url.Action("Confirm", "Loading", new { id = ViewBag.ShipmentId })";
+                    createHttpPost(url, null);
+                });
         }
     </script>
 

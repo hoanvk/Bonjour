@@ -23,18 +23,42 @@ public class UnloadingController : Controller
         this.dbContext = dbContext;
     }
 
-    [HttpGet("/Unloading")]
+    [HttpGet("/Unloading/{id}/Product")]
     [Authorize(Roles = "Unloading")]
-    public IActionResult Index()
+    public async Task<IActionResult> Index(int? id)
     {
-        var shipments = dbContext.Shipments
+        if (!id.HasValue)
+        {
+            var _pendingShipment = await dbContext.Shipments
             .Where(s => s.Status == ShipmentStatus.IN_TRANSIT.Code)
             .OrderBy(s => s.Id)
-            .ToList();
-        return View("Index", shipments);
+            .FirstOrDefaultAsync();
+            if (_pendingShipment == null)
+            {
+                return RedirectToAction("Index", "Shipment");
+            }
+            return RedirectToAction("Index", new { id = _pendingShipment.Id });
+        }
+
+        var _products = await dbContext.ShipmentProducts.Join(dbContext.Products,
+         t1 => t1.ProductId,
+         t2 => t2.Id,
+         (t1, t2) => new { ShipmentProduct = t1, Product = t2 })
+         .Where(m => m.ShipmentProduct.ShipmentId == id)
+         .Select(m => new ShipmentProductDto(
+             m.Product.Id,
+             m.Product.Code,
+             m.Product.Name,
+             m.ShipmentProduct.Loaded,
+             m.ShipmentProduct.Unloaded,
+             m.ShipmentProduct.CreatedAt,
+             m.ShipmentProduct.UpdatedAt
+         )).ToListAsync();
+        ViewBag.ShipmentId = id;
+        return View("Index", _products);
     }
 
-    [HttpPost("/Unloading/{id}/Product/Create")]
+    [HttpPost("/Unloading/{id}/Product")]
     public async Task<IActionResult> Create(int id, [FromBody] DeliveryRequest request)
     {
 
@@ -49,7 +73,8 @@ public class UnloadingController : Controller
             return UnprocessableEntity(ModelState);
         }
         string message = request.message;
-        var _productDetail = await dbContext.ProductDetails.FirstOrDefaultAsync(x => x.ShortId == message);
+        var _productDetail = await dbContext.ProductDetails
+        .FirstOrDefaultAsync(x => x.ShortId == message);
         if (_productDetail == null)
         {
             logger.LogError($"Product {message} not found");
@@ -65,7 +90,13 @@ public class UnloadingController : Controller
             return UnprocessableEntity(ModelState);
         }
         var _product = await dbContext.Products.FindAsync(_productDetail.ProductId);
-        var _shipmentProduct = await dbContext.ShipmentProducts.FirstOrDefaultAsync(sp => sp.ProductId == _product.Id && sp.ShipmentId == id);
+        var _shipmentProduct = await dbContext.ShipmentProducts
+        .FirstOrDefaultAsync(sp => sp.ProductId == _product.Id && sp.ShipmentId == id);
+        if (_shipmentProduct == null)
+        {
+            ModelState.AddModelError("message", $"Product {_product.Code} is not in Shipment {id}");
+            return UnprocessableEntity(ModelState);
+        }
         if (productStatus == ProductStatus.LOADED)
         {
             _productDetail.Status = ProductStatus.UNLOADED.Code;
@@ -93,23 +124,9 @@ public class UnloadingController : Controller
 
     [HttpGet("/Unloading/{id}/Product/Scan")]
     [Authorize(Roles = "Unloading")]
-    public IActionResult Scan(int? id)
+    public IActionResult Scan(int id)
     {
-        int shipmentId = 0;
-        if (!id.HasValue)
-        {
-            var _pendingShipment = dbContext.Shipments.Where(s => s.Status == ShipmentStatus.IN_TRANSIT.Code).OrderBy(s => s.Id).FirstOrDefault();
-            if (_pendingShipment == null)
-            {
-                return RedirectToAction("Index", "Shipment");
-            }
-            shipmentId = _pendingShipment.Id;
-        }
-        else
-        {
-            shipmentId = id.Value;
-        }
-        return View("Scan", shipmentId);
+        return View("Scan", id);
     }
 
     [HttpPost("/Unloading/{id}/Product/Confirm")]
@@ -120,6 +137,12 @@ public class UnloadingController : Controller
         if (_shipment == null)
         {
             ModelState.AddModelError("id", "Shipment not found");
+            return UnprocessableEntity(ModelState);
+        }
+        var shipmentStatus = new ShipmentStatus(_shipment.Status);
+        if (shipmentStatus != ShipmentStatus.IN_TRANSIT)
+        {
+            ModelState.AddModelError("id", "Shipment should be in IN_TRANSIT status");
             return UnprocessableEntity(ModelState);
         }
         _shipment.Status = ShipmentStatus.DELIVERED.Code;

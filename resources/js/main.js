@@ -50,7 +50,10 @@ window.createHttpPost = function (url, data, { onSuccess, onError } = {}) {
 		.then(function (response) {
 			Swal.fire({
 				title: "Good job!",
-				html: `<b>${response.data.code}</b><div>${response.data.name}</div>`,
+				text:
+					typeof response.data === "string"
+						? response.data
+						: "Operation completed successfully.",
 				icon: "success",
 			}).then(() => {
 				if (onSuccess) {
@@ -62,7 +65,12 @@ window.createHttpPost = function (url, data, { onSuccess, onError } = {}) {
 			Swal.fire({
 				icon: "error",
 				title: "Oops...",
-				text: error.message,
+				text:
+					Object.keys(error.response.data).length === 0
+						? error.message
+						: error.response.data[
+								Object.keys(error.response.data)[0]
+						  ],
 			}).then(() => {
 				if (onError) {
 					onError(error);

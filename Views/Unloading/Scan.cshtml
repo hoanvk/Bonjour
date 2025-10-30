@@ -34,7 +34,7 @@
                 html5QrcodeScanner.resume();
             });
             */
-            createHttpPost("@Url.Action("Create", "Loading", new { Id = Model })", { message: decodedText }, {
+            createHttpPost("@Url.Action("Create", "Unloading", new { Id = Model })", { message: decodedText }, {
                 onSuccess: function (response) {
                     connection.invoke("SendNotification", response.data).catch(err => console.error(err));
                     html5QrcodeScanner.resume();

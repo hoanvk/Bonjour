@@ -75,6 +75,16 @@ public class UserController : Controller
             ModelState.AddModelError("User", "User not found");
             return UnprocessableEntity(ModelState);
         }
+        if (_user.Username == "admin")
+        {
+            ModelState.AddModelError(string.Empty, "Admin user cannot be deleted");
+            return UnprocessableEntity(ModelState);
+        }
+        if (_user.Username == User.Identity.Name)
+        {
+            ModelState.AddModelError("User", "You cannot delete your own account");
+            return UnprocessableEntity(ModelState);
+        }
         var _userHasRoles = await dbContext.UserHasRoles.Where(m => m.UserId == id).ToListAsync();
         dbContext.UserHasRoles.RemoveRange(_userHasRoles);
         dbContext.Users.Remove(_user);
@@ -92,6 +102,11 @@ public class UserController : Controller
         if (_user == null)
         {
             ModelState.AddModelError("User", "User not found");
+            return UnprocessableEntity(ModelState);
+        }
+        if (_user.Username == "admin" && User.Identity.Name != "admin")
+        {
+            ModelState.AddModelError(string.Empty, "Only admin can change admin password");
             return UnprocessableEntity(ModelState);
         }
         var password = passwordHasher.HashPassword(changePasswordRequest.Password);

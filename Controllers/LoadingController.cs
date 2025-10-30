@@ -29,7 +29,10 @@ public class LoadingController : Controller
     {
         if (!id.HasValue)
         {
-            var _pendingShipment = dbContext.Shipments.Where(s => s.Status == ShipmentStatus.PENDING.Code).OrderBy(s => s.Id).FirstOrDefault();
+            var _pendingShipment = await dbContext.Shipments
+            .Where(s => s.Status == ShipmentStatus.PENDING.Code)
+            .OrderBy(s => s.Id)
+            .FirstOrDefaultAsync();
             if (_pendingShipment == null)
             {
                 return RedirectToAction("Index", "Shipment");
@@ -40,7 +43,9 @@ public class LoadingController : Controller
         var _products = await dbContext.ShipmentProducts.Join(dbContext.Products,
          t1 => t1.ProductId,
          t2 => t2.Id,
-         (t1, t2) => new { ShipmentProduct = t1, Product = t2 }).Where(m => m.ShipmentProduct.ShipmentId == id).Select(m => new ShipmentProductDto(
+         (t1, t2) => new { ShipmentProduct = t1, Product = t2 })
+         .Where(m => m.ShipmentProduct.ShipmentId == id)
+         .Select(m => new ShipmentProductDto(
              m.Product.Id,
              m.Product.Code,
              m.Product.Name,
@@ -68,7 +73,8 @@ public class LoadingController : Controller
             return UnprocessableEntity(ModelState);
         }
         string message = request.message;
-        var _productDetail = await dbContext.ProductDetails.FirstOrDefaultAsync(x => x.ShortId == message);
+        var _productDetail = await dbContext.ProductDetails
+        .FirstOrDefaultAsync(x => x.ShortId == message);
         if (_productDetail == null)
         {
             logger.LogError($"Product {message} not found");
@@ -83,7 +89,8 @@ public class LoadingController : Controller
             return UnprocessableEntity(ModelState);
         }
         var _product = await dbContext.Products.FindAsync(_productDetail.ProductId);
-        var _shipmentProduct = await dbContext.ShipmentProducts.FirstOrDefaultAsync(sp => sp.ProductId == _product.Id && sp.ShipmentId == id);
+        var _shipmentProduct = await dbContext.ShipmentProducts
+        .FirstOrDefaultAsync(sp => sp.ProductId == _product.Id && sp.ShipmentId == id);
         if (productStatus == ProductStatus.AVAILABLE)
         {
             _productDetail.Status = ProductStatus.LOADED.Code;
@@ -137,6 +144,12 @@ public class LoadingController : Controller
         if (_shipment == null)
         {
             ModelState.AddModelError("id", "Shipment not found");
+            return UnprocessableEntity(ModelState);
+        }
+        var shipmentStatus = new ShipmentStatus(_shipment.Status);
+        if (shipmentStatus != ShipmentStatus.PENDING)
+        {
+            ModelState.AddModelError("id", "Shipment should be in PENDING status");
             return UnprocessableEntity(ModelState);
         }
         _shipment.Status = ShipmentStatus.IN_TRANSIT.Code;

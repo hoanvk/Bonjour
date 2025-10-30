@@ -37,11 +37,15 @@ const submitFormData = (form, selectors = []) => {
 			});
 		})
 		.catch((error) => {
-			console.log("error :>> ", error.response.data);
 			Swal.fire({
 				icon: "error",
 				title: "Oops...",
-				text: error.message,
+				text:
+					Object.keys(error.response.data).length === 0
+						? error.message
+						: error.response.data[
+								Object.keys(error.response.data)[0]
+						  ],
 			}).then(() => {
 				Object.keys(error.response.data).forEach((prop) => {
 					var inputElement = formElement.querySelector(

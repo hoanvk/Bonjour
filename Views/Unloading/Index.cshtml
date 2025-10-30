@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<Bonjour.Domain.Shipments.ShipmentProductDto>;
 @{
-    ViewData["Title"] = "Loading";
+    ViewData["Title"] = "Unloading";
     Layout = "_AdminLayout";
 }
 <h1 class="mt-4">Product</h1>
@@ -31,8 +31,8 @@
                         </td>
                         <td>@product.Code</td>
                         <td>@product.Name</td>
-                        <td data-column="loaded">@product.Loaded</td>
-                        <td>@product.Unloaded</td>
+                        <td>@product.Loaded</td>
+                        <td data-column="unloaded">@product.Unloaded</td>
                         <td>@product.CreatedAt</td>
                         <td data-column="updated_at">@(product.UpdatedAt.HasValue ?
                                                 product.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") :
@@ -42,7 +42,7 @@
             </tbody>
         </table>
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <a asp-controller="Loading" asp-action="Scan" asp-route-id="@ViewBag.ShipmentId"
+            <a asp-controller="Unloading" asp-action="Scan" asp-route-id="@ViewBag.ShipmentId"
                 class="btn btn-primary me-md-2" style="width: 100px;" role="button">Scan</a>
             <!-- Button trigger modal -->
             <button type="button" class="btn btn-primary" style="width: 100px;" onclick="confirmLoadedHandler()">
@@ -67,8 +67,8 @@
                 var rowElement = document.getElementById(product.id);
                 if (rowElement) {
                     console.log('updated');
-                    var loadedColumn = rowElement.querySelector('[data-column="loaded"]');
-                    updateContentAndFlash(loadedColumn, product.loaded);
+                    var unloadedColumn = rowElement.querySelector('[data-column="unloaded"]');
+                    updateContentAndFlash(unloadedColumn, product.unloaded);
                     var updatedAtColumn = rowElement.querySelector('[data-column="updated_at"]');
                     updateContentAndFlash(updatedAtColumn, product.updatedAt);
                 }
@@ -85,9 +85,9 @@
                     nameCellElement.innerText = product.name;
                     let loadedCellElement = rowElement.insertCell(3);
                     loadedCellElement.innerText = product.loaded;
-                    loadedCellElement.setAttribute('data-column', 'loaded');
                     let unloadedCellElement = rowElement.insertCell(4);
                     unloadedCellElement.innerText = product.unloaded;
+                    unloadedCellElement.setAttribute('data-column', 'unloaded');
                     let createdAtCellElement = rowElement.insertCell(5);
                     createdAtCellElement.innerText = product.createdAt;
                     let updatedAtCellElement = rowElement.insertCell(6);
@@ -117,10 +117,10 @@
 
         function confirmLoadedHandler() {
             ConfirmDialog(
-                'Confirm shipment loaded',
-                'Are you sure you want to confirm loaded products?',
+                'Confirm shipment unloaded',
+                'Are you sure you want to confirm unloaded products?',
                 () => {
-                    const url = "@Url.Action("Confirm", "Loading", new { id = ViewBag.ShipmentId })";
+                    const url = "@Url.Action("Confirm", "Unloading", new { id = ViewBag.ShipmentId })";
                     createHttpPost(url, null);
                 });
         }

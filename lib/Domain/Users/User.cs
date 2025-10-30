@@ -4,8 +4,18 @@ namespace Bonjour.Domain.Users;
 
 public class User
 {
+    public User(string username)
+    {
+        Username = username;
+    }
+
     public string Name { get; set; }
-    public string Username { get; set; }
+    public string Username { get; private set; }
     public string Email { get; set; }
     public IList<Role> Roles { get; set; }
+
+    public bool IsAdmin()
+    {
+        return Username == "admin";
+    }
 }

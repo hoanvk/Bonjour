@@ -1,47 +1,50 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization
+@using Microsoft.Extensions.Localization
+@{
     ViewData["Title"] = "Home Page";
     Layout = "_AdminLayout";
 }
-
-<h1 class="mt-4">Dashboard</h1>
+@inject IStringLocalizer<SharedResources> Localizer
+<h1 class="mt-4">@Localizer["Dashboard"]</h1>
 <ol class="breadcrumb mb-4">
-    <li class="breadcrumb-item active">Dashboard</li>
+    <li class="breadcrumb-item active">@Localizer["Dashboard"]</li>
 </ol>
 <div class="row">
     <div class="col-xl-3 col-md-6">
         <div class="card bg-primary text-white mb-4">
-            <div class="card-body">Loading</div>
+            <div class="card-body">@Localizer["Loading"]</div>
             <div class="card-footer d-flex align-items-center justify-content-between">
                 <a class="small text-white stretched-link" asp-action="Index" asp-controller="Loading"
-                    asp-route-id="null">View Details</a>
+                    asp-route-id="null">@Localizer["View Details"]</a>
                 <div class="small text-white"><i class="fas fa-angle-right"></i></div>
             </div>
         </div>
     </div>
     <div class="col-xl-3 col-md-6">
         <div class="card bg-warning text-white mb-4">
-            <div class="card-body">Unloading</div>
+            <div class="card-body">@Localizer["Unloading"]</div>
             <div class="card-footer d-flex align-items-center justify-content-between">
                 <a class="small text-white stretched-link" asp-action="Index" asp-controller="Unloading"
-                    asp-route-id="null">View Details</a>
+                    asp-route-id="null">@Localizer["View Details"]</a>
                 <div class="small text-white"><i class="fas fa-angle-right"></i></div>
             </div>
         </div>
     </div>
     <div class="col-xl-3 col-md-6">
         <div class="card bg-success text-white mb-4">
-            <div class="card-body">Delivered</div>
+            <div class="card-body">@Localizer["Delivered"]</div>
             <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-white stretched-link" asp-action="Index" asp-controller="Shipment">View Details</a>
+                <a class="small text-white stretched-link" asp-action="Index" asp-controller="Shipment">@Localizer["View Details"]</a>
                 <div class="small text-white"><i class="fas fa-angle-right"></i></div>
             </div>
         </div>
     </div>
     <div class="col-xl-3 col-md-6">
         <div class="card bg-danger text-white mb-4">
-            <div class="card-body">Danger Card</div>
+            <div class="card-body">@Localizer["Error"]</div>
             <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-white stretched-link" href="#">View Details</a>
+                <a class="small text-white stretched-link" href="#">@Localizer["View Details"]</a>
                 <div class="small text-white"><i class="fas fa-angle-right"></i></div>
             </div>
         </div>

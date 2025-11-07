@@ -14,6 +14,7 @@ public class Product
     public string Name { get; set; }
     public int Quantity { get; set; }
     public int Delivery { get; set; }
+    public int? Weight { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 

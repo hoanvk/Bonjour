@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Bonjour.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.Extensions.Localization;
 
 namespace Bonjour.Controllers;
 
@@ -12,15 +13,17 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> logger;
     private readonly ApplicationDbContext dbContext;
-
-    public HomeController(ILogger<HomeController> logger, ApplicationDbContext dbContext)
+    private readonly IStringLocalizer<SharedResources> _localizer;
+    public HomeController(ILogger<HomeController> logger, ApplicationDbContext dbContext, IStringLocalizer<SharedResources> localizer)
     {
         this.logger = logger;
         this.dbContext = dbContext;
+        _localizer = localizer;
     }
 
     public IActionResult Index()
     {
+        logger.LogInformation(_localizer["Dashboard"]);
         return View();
     }
 

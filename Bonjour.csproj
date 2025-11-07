@@ -4,9 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>qrcode_generator</RootNamespace>
+    <RootNamespace>Bonjour</RootNamespace>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="EPPlus" Version="8.2.0" />
     <PackageReference Include="MediatR" Version="13.1.0" />

@@ -1,25 +1,27 @@
+@using Microsoft.Extensions.Localization
 @model IEnumerable<Bonjour.Models.Shipment>;
 @{
     Layout = "_AdminLayout";
 }
-<h1 class="mt-4">Product</h1>
+@inject IStringLocalizer<SharedResources> Localizer
+<h1 class="mt-4">@Localizer["Product"]</h1>
 <ol class="breadcrumb mb-4">
-    <li class="breadcrumb-item"><a asp-controller="Shipment" asp-action="Index">Shipment</a></li>
-    <li class="breadcrumb-item active">Product</li>
+    <li class="breadcrumb-item"><a asp-controller="Shipment" asp-action="Index">@Localizer["Shipment"]</a></li>
+    <li class="breadcrumb-item active">@Localizer["Product"]</li>
 </ol>
 <div class="card mt-4">
     <div class="card-body">
-        <h5 class="card-title">Shipments</h5>
+        <h5 class="card-title">@Localizer["Shipments"]</h5>
         <table class="table">
             <thead>
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Carrier</th>
-                    <th scope="col">Consignee</th>
-                    <th scope="col">Departure</th>
-                    <th scope="col">Status</th>
-                    <th>Products</th>
-                    <th>Actions</th>
+                    <th scope="col">@Localizer["Carrier"]</th>
+                    <th scope="col">@Localizer["Consignee"]</th>
+                    <th scope="col">@Localizer["Departure"]</th>
+                    <th scope="col">@Localizer["Status"]</th>
+                    <th>@Localizer["Products"]</th>
+                    <th>@Localizer["Actions"]</th>
                 </tr>
             </thead>
             <tbody>

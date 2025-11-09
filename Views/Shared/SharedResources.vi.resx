@@ -108,5 +108,16 @@
     <data name="Save changes" xml:space="preserve">
         <value>Lưu thay đổi</value>
     </data>
-
+    <data name="Customer" xml:space="preserve">
+        <value>Khách hàng</value>
+    </data>
+    <data name="Start Date" xml:space="preserve">
+        <value>Ngày bắt đầu</value>
+    </data>
+    <data name="End Date" xml:space="preserve">
+        <value>Ngày kết thúc</value>
+    </data>
+    <data name="Create" xml:space="preserve">
+        <value>Tạo mới</value>
+    </data>
 </root>

@@ -17,3 +17,12 @@
 .modal-footer {
 	border-top: 0 none;
 }
+
+.language-icon {
+    width: 24px;
+    height: 24px; /* Sets the icon to a 32x32 pixel size */
+}
+
+.language-dropdown-toggle::after {
+    content: none;
+}

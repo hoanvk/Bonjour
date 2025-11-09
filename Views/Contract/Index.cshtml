@@ -1,25 +1,27 @@
 @using Newtonsoft.Json
+@using Microsoft.Extensions.Localization
 @model IEnumerable<Bonjour.Models.Contract>;
 @{
     Layout = "_AdminLayout";
 }
-<h1 class="mt-4">Contract</h1>
+@inject IStringLocalizer<SharedResources> Localizer
+<h1 class="mt-4">@Localizer["Contract"]</h1>
 <ol class="breadcrumb mb-4">
-    <li class="breadcrumb-item active">Contract</li>
+    <li class="breadcrumb-item active">@Localizer["Contract"]</li>
 </ol>
 <div class="card mt-4">
     <div class="card-body">
-        <h5 class="card-title">Contracts</h5>
+        <h5 class="card-title">@Localizer["Contracts"]</h5>
         <table class="table">
             <thead>
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Customer</th>
-                    <th scope="col">Start Date</th>
-                    <th scope="col">End Date</th>
-                    <th scope="col">Products</th>
-                    <th scope="col">Actions</th>
+                    <th scope="col">@Localizer["Name"]</th>
+                    <th scope="col">@Localizer["Customer"]</th>
+                    <th scope="col">@Localizer["Start Date"]</th>
+                    <th scope="col">@Localizer["End Date"]</th>
+                    <th scope="col">@Localizer["Products"]</th>
+                    <th scope="col">@Localizer["Actions"]</th>
                 </tr>
             </thead>
             <tbody>
@@ -31,12 +33,13 @@
                         <td>@contract.Customer</td>
                         <td>@contract.StartDate</td>
                         <td>@contract.EndDate</td>
-                        <td><a asp-controller="ContractProduct" asp-action="Index" asp-route-id="@contract.Id">Products</a>
+                        <td><a asp-controller="ContractProduct" asp-action="Index"
+                                asp-route-id="@contract.Id">@Localizer["Products"]</a>
                         </td>
                         <td>
                             <button class="btn" type="button" data-bs-toggle="modal" data-bs-target="#editContractModal"
                                 data-bs-entity="@JsonConvert.SerializeObject(contract)"><i class="fa fa-edit"></i></button>
-                            <button class="btn" type="button" onclick="deleteContractHandler(@contract.Id)"><i
+                            <button class="btn" type="button" onclick="Contract.deleteContractHandler(@contract.Id)"><i
                                     class="fa fa-trash"></i></button>
                         </td>
                     </tr>
@@ -45,7 +48,7 @@
         </table>
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createContractModal">
-            Create
+            @Localizer["Create"]
         </button>
         <form asp-action="Delete" method="post" id="deleteContractForm">
             @Html.AntiForgeryToken()
@@ -58,49 +61,6 @@
 </div>
 @section Scripts {
     <script defer>
-        function createContractHandler() {
-            submitFormData("createContractForm", [
-                "input[name='Name']",
-                "input[name='Customer']",
-                "input[name='StartDate']",
-                "input[name='EndDate']"
-            ]);
-        }
-        function editContractHandler() {
-            submitFormData("editContractForm", [
-                "input[name='id']",
-                "input[name='Name']",
-                "input[name='Customer']",
-                "input[name='StartDate']",
-                "input[name='EndDate']"
-            ]);
-        }
-        function deleteContractHandler(id) {
-            const formElement = document.getElementById("deleteContractForm");
-            const hiddenElement = formElement.querySelector('input[name="id"]');
-            hiddenElement.value = id;
-            submitFormData("deleteContractForm", ["input[name='id']"]);
-        }
-        const modalElement = document.getElementById('editContractModal');
-        modalElement.addEventListener('show.bs.modal', event => {
-            var formElement = document.getElementById("editContractForm");
-            // Button that triggered the modal
-            const button = event.relatedTarget;
-            // Extract info from data-bs-* attributes
-            const entity = JSON.parse(button.getAttribute('data-bs-entity'));
-            console.log(entity);
-            [
-                "input[name='id']",
-                "input[name='Name']",
-                "input[name='Customer']",
-                "input[name='StartDate']",
-                "input[name='EndDate']"
-            ].forEach(selector => {
-                var inputElement = formElement.querySelector(selector);
-                var prop = inputElement.getAttribute("name");
-                prop = prop.charAt(0).toLocaleLowerCase() + prop.slice(1);
-                inputElement.value = entity[prop];
-            });
-        })
+        Contract.showContractHandler()
     </script>
 }

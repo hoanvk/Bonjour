@@ -26,3 +26,31 @@
 .language-dropdown-toggle::after {
     content: none;
 }
+
+@media print {
+  @page {
+    size: A4; /* Sets the page size to A4 */
+    margin: 20mm; /* Sets a 20mm margin on all sides */
+  }
+  body {
+    margin: 0; /* Remove default body margin */
+    color: #000; /* Ensure black text for printing */
+    background-color: #fff; /* Ensure white background for printing */
+    font-size: 10pt; /* Adjust base font size for print */
+  }
+
+  .container {
+    width: 100% !important; /* Ensure container takes full width */
+    max-width: none !important; /* Remove max-width constraints */
+  }
+
+  /* Example: Force desktop-like column layout */
+  .col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+
+  .page-break-after {
+    page-break-after: always;
+  }
+}

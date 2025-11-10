@@ -1,4 +1,5 @@
 @using Microsoft.Extensions.Localization
+@using Newtonsoft.Json
 @model IEnumerable<Bonjour.Models.Shipment>;
 @{
     Layout = "_AdminLayout";
@@ -35,7 +36,10 @@
                         <td>@shipment.Status</td>
                         <td><a asp-controller="ShipmentProduct" asp-action="Index" asp-route-id="@shipment.Id">Products</a>
                         </td>
-                        <td><button class="btn" type="button" onclick="deleteShipmentHandler(@shipment.Id)"><i
+                        <button class="btn" type="button" data-bs-toggle="modal" data-bs-target="#editPermissionModal"
+                            data-bs-entity="@JsonConvert.SerializeObject(shipment)" onclick="Shipment.edit(button)"><i
+                                class="fa fa-edit"></i></button>
+                        <td><button class="btn" type="button" onclick="Shipment.remove(@shipment.Id)"><i
                                     class="fa fa-trash"></i></button></td>
                     </tr>
                 }
@@ -51,30 +55,6 @@
         </form>
         <!-- Modal -->
         @Html.Partial("Create")
+        @Html.Partial("Edit")
     </div>
 </div>
-@section Scripts {
-    <script defer>
-        function createShipmentHandler() {
-            const token = document.querySelector(
-                'input[name="__RequestVerificationToken"]'
-            ).value;
-            var data = {
-                carrier: document.querySelector("#carrier").value,
-                consignee: document.querySelector("#consignee").value,
-                departure: document.querySelector("#departure").value,
-            }
-            submitFormData("createShipmentForm", [
-                "input[name='carrier']",
-                "input[name='consignee']",
-                "input[name='departure']"
-            ]);
-        }
-        function deleteShipmentHandler(id) {
-            const form = document.getElementById("deleteShipmentForm");
-            const shipmentIdElement = form.querySelector('input[name="id"]');
-            shipmentIdElement.value = id;
-            submitFormData("deleteShipmentForm", ["input[name='id']"]);
-        }
-    </script>
-}

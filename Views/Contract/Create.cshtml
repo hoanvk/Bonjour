@@ -1,41 +1,42 @@
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResources> Localizer
 <div class="modal fade" id="createContractModal" tabindex="-1" aria-labelledby="createContractModalLabel"
     aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="createContractModalLabel">Create Contract</h1>
+                <h1 class="modal-title fs-5" id="createContractModalLabel">@Localizer["Create Contract"]</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form class="row g-3" asp-action="Create" method="post" id="createContractForm">
                     @Html.AntiForgeryToken()
                     <div class="col-md-12">
-                        <label for="Name" class="form-label">Name</label>
+                        <label for="Name" class="form-label">@Localizer["Name"]</label>
                         <input type="text" class="form-control" id="Name" name="Name" placeholder="Hợp đồng">
                         <div class="invalid-feedback"></div>
                     </div>
                     <div class="col-md-12">
-                        <label for="Customer" class="form-label">Customer</label>
+                        <label for="Customer" class="form-label">@Localizer["Customer"]</label>
                         <input type="text" class="form-control" id="Customer" name="Customer"
                             placeholder="Tên khách hàng">
                         <div class="invalid-feedback"></div>
                     </div>
                     <div class="col-md-6">
-                        <label for="StartDate" class="form-label">Start Date</label>
+                        <label for="StartDate" class="form-label">@Localizer["Start Date"]</label>
                         <input type="text" class="form-control date" id="StartDate" name="StartDate">
                         <div class="invalid-feedback"></div>
                     </div>
                     <div class="col-md-6">
-                        <label for="EndDate" class="form-label">End Date</label>
+                        <label for="EndDate" class="form-label">@Localizer["End Date"]</label>
                         <input type="text" class="form-control date" id="EndDate" name="EndDate">
                         <div class="invalid-feedback"></div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="Contract.createContractHandler()">Save
-                    changes</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Close"]</button>
+                <button type="button" class="btn btn-primary" onclick="Contract.create()">@Localizer["Save changes"]</button>
             </div>
         </div>
     </div>

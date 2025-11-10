@@ -34,7 +34,7 @@
         <value>Vai trò</value>
     </data>
     <data name="Permission" xml:space="preserve">
-        <value>Cho phép</value>
+        <value>Quyền</value>
     </data>
     <data name="Pages" xml:space="preserve">
         <value>Chức năng</value>
@@ -119,5 +119,38 @@
     </data>
     <data name="Create" xml:space="preserve">
         <value>Tạo mới</value>
+    </data>
+    <data name="Edit" xml:space="preserve">
+        <value>Chỉnh sửa</value>
+    </data>
+    <data name="Delete" xml:space="preserve">
+        <value>Xóa</value>
+    </data>
+    <data name="Are you sure you want to delete this item?" xml:space="preserve">
+        <value>Bạn có chắc chắn muốn xóa mục này không?</value>
+    </data>
+    <data name="Yes" xml:space="preserve">
+        <value>Có</value>
+    </data>
+    <data name="No" xml:space="preserve">
+        <value>Không</value>
+    </data>
+    <data name="Submit" xml:space="preserve">
+        <value>Gửi</value>
+    </data>
+    <data name="Reset" xml:space="preserve">
+        <value>Đặt lại</value>
+    </data>
+    <data name="Search" xml:space="preserve">
+        <value>Tìm kiếm</value>
+    </data>
+    <data name="Return to Dashboard" xml:space="preserve">
+        <value>Quay lại Bảng điều khiển</value>
+    </data>
+    <data name="Unauthorized" xml:space="preserve">
+        <value>Không được phép</value>
+    </data>
+    <data name="Access to this resource is denied." xml:space="preserve">
+        <value>Truy cập bị từ chối</value>
     </data>
 </root>

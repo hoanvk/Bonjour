@@ -1,0 +1,23 @@
+@using Microsoft.Extensions.Localization
+@using System.Globalization
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Dashboard - SB Admin</title>
+    <script src="~/dist/main.js" defer></script>
+</head>
+@inject IStringLocalizer<SharedResources> Localizer
+
+<body>
+    <div class="container py-4">
+        @RenderBody()
+    </div>
+</body>
+
+</html>

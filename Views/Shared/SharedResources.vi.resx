@@ -153,4 +153,37 @@
     <data name="Access to this resource is denied." xml:space="preserve">
         <value>Truy cập bị từ chối</value>
     </data>
+    <data name="Import" xml:space="preserve">
+        <value>Import</value>
+    </data>
+    <data name="Print QrCode" xml:space="preserve">
+        <value>In mã Qr</value>
+    </data>
+    <data name="Quantity" xml:space="preserve">
+        <value>Số lượng</value>
+    </data>
+    <data name="CreatedAt" xml:space="preserve">
+        <value>Ngày tạo</value>
+    </data>
+    <data name="Weight" xml:space="preserve">
+        <value>Trọng lượng</value>
+    </data>
+    <data name="Import File" xml:space="preserve">
+        <value>Nhập tệp</value>
+    </data>
+    <data name="Choose file to import products" xml:space="preserve">
+        <value>Chọn tệp để nhập sản phẩm</value>
+    </data>
+    <data name="Select file" xml:space="preserve">
+        <value>Chọn tệp</value>
+    </data>
+    <data name="Import Products" xml:space="preserve">
+        <value>Nhập sản phẩm</value>
+    </data>
+    <data name="File imported successfully." xml:space="preserve">
+        <value>Tệp đã được nhập thành công.</value>
+    </data>
+    <data name="Error importing file. Please try again." xml:space="preserve">
+        <value>Lỗi khi nhập tệp. Vui lòng thử lại.</value>
+    </data>
 </root>

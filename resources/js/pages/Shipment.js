@@ -27,7 +27,6 @@ function edit(button) {
 
 function update() {
     submitFormData('editShipmentForm', [
-        "input[name='id']",
         "input[name='carrier']",
         "input[name='consignee']",
         "input[name='departure']",

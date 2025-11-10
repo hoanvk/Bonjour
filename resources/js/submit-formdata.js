@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 
 const submitFormData = (form, selectors = []) => {
     const formElement = document.getElementById(form);
-    const url = formElement.action;
+    let url = formElement.action;
     const routeIdElements = formElement.querySelectorAll('[route-id]');
     routeIdElements.forEach((routeIdElement) => {
         url = url.replace(
@@ -11,6 +11,7 @@ const submitFormData = (form, selectors = []) => {
             routeIdElement.value
         );
     });
+    console.log(url);
     const formData = new FormData();
 
     selectors.forEach((selector) => {

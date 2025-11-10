@@ -35,40 +35,12 @@ public class ShipmentProductController : Controller
             m.Product.Name,
             m.ShipmentProduct.Loaded,
             m.ShipmentProduct.Unloaded,
+            m.Product.Weight.GetValueOrDefault(0),
             m.ShipmentProduct.CreatedAt,
             m.ShipmentProduct.UpdatedAt
         )).ToListAsync();
         ViewBag.ShipmentId = id;
         return View("Index", _products);
-    }
-
-    [HttpPost("/Shipment/{id}/Product")]
-    public async Task<IActionResult> Import(int id, IEnumerable<IFormFile> files)
-    {
-        logger.LogInformation("Import files");
-        if (files != null && files.Any())
-        {
-            foreach (var file in files)
-            {
-                // Process each file
-                // Example: Save to wwwroot/uploads folder
-                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "storage", "imports");
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-
-                var filePath = Path.Combine(uploadsFolder, file.FileName);
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
-                // For non-commercial use, you can use LicenseContext.NonCommercial
-                await mediator.Send(new ImportShipmentProductRequest(id, filePath));
-            }
-            return Ok("Files uploaded successfully!");
-        }
-        return BadRequest("No files selected.");
     }
 
     [HttpGet("/Shipment/{id}/Product/Export")]

@@ -34,13 +34,17 @@
                         <td>@shipment.Consignee</td>
                         <td>@shipment.Departure</td>
                         <td>@shipment.Status</td>
-                        <td><a asp-controller="ShipmentProduct" asp-action="Index" asp-route-id="@shipment.Id">Products</a>
+                        <td>
+                            <a asp-controller="ShipmentProduct" asp-action="Index"
+                                asp-route-id="@shipment.Id">@Localizer["Products"]</a>
                         </td>
-                        <button class="btn" type="button" data-bs-toggle="modal" data-bs-target="#editPermissionModal"
-                            data-bs-entity="@JsonConvert.SerializeObject(shipment)" onclick="Shipment.edit(button)"><i
-                                class="fa fa-edit"></i></button>
-                        <td><button class="btn" type="button" onclick="Shipment.remove(@shipment.Id)"><i
-                                    class="fa fa-trash"></i></button></td>
+                        <td>
+                            <button class="btn" type="button" data-bs-toggle="modal" data-bs-target="#editShipmentModal"
+                                data-bs-entity="@JsonConvert.SerializeObject(shipment)" onclick="Shipment.edit(this)"><i
+                                    class="fa fa-edit"></i></button>
+                            <button class="btn" type="button" onclick="Shipment.remove(@shipment.Id)"><i
+                                    class="fa fa-trash"></i></button>
+                        </td>
                     </tr>
                 }
             </tbody>

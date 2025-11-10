@@ -55,7 +55,7 @@ function remove(id) {
 function edit(button) {
     var formElement = document.getElementById('editRoleForm');
     const entity = JSON.parse(button.getAttribute('data-bs-entity'));
-    [("input[name='id']", "input[name='Name']")].forEach((selector) => {
+    ["input[name='id']", "input[name='Name']"].forEach((selector) => {
         var inputElement = formElement.querySelector(selector);
         var prop = inputElement.getAttribute('name');
         prop = prop.charAt(0).toLocaleLowerCase() + prop.slice(1);

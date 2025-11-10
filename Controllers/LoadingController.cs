@@ -51,6 +51,7 @@ public class LoadingController : Controller
              m.Product.Name,
              m.ShipmentProduct.Loaded,
              m.ShipmentProduct.Unloaded,
+            m.Product.Weight.GetValueOrDefault(0),
              m.ShipmentProduct.CreatedAt,
              m.ShipmentProduct.UpdatedAt
          )).ToListAsync();

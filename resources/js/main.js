@@ -128,6 +128,8 @@ window.setLanguage = (element) => {
 
 import Contract from './pages/Contract.js';
 window.Contract = Contract;
+import ContractProduct from './pages/ContractProduct.js';
+window.ContractProduct = ContractProduct;
 import Role from './pages/Role.js';
 window.Role = Role;
 import Permission from './pages/Permission.js';

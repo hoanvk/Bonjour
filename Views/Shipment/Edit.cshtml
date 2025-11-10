@@ -1,5 +1,6 @@
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<SharedResources> Localizer
+
 <div class="modal fade" id="editShipmentModal" tabindex="-1" aria-labelledby="editShipmentModalLabel"
     aria-hidden="true">
     <div class="modal-dialog">
@@ -9,9 +10,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form class="row g-3" asp-action="Edit" method="post" id="editShipmentForm">
+                <form class="row g-3" asp-action="Edit" method="post" id="editShipmentForm" asp-route-id="__id">
                     @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" value="" />
+                    <input type="hidden" name="id" value="" route-id/>
                     <div class="col-md-12">
                         <label for="carrier" class="form-label">@Localizer["Carrier"]</label>
                         <input type="text" class="form-control" id="carrier" name="carrier" placeholder="carrier">

@@ -48,6 +48,7 @@ public class ImportContractProductHandler : IRequestHandler<ImportContractProduc
                     product.Code = worksheet.Cells[rowNum, startCol].Text;
                     product.Name = worksheet.Cells[rowNum, startCol + 1].Text;
                     product.Quantity = int.Parse(worksheet.Cells[rowNum, startCol + 2].Text);
+                    product.Weight = int.Parse(worksheet.Cells[rowNum, startCol + 3].Text);
                     product.Delivery = 0;
                     product.ContractId = id;
                     dbContext.Products.Add(product);

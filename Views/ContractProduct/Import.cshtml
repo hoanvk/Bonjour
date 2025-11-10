@@ -1,24 +1,27 @@
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResources> Localizer
+
 <div class="modal fade" id="importFileModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Import products</h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">@Localizer["Import products"]</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form asp-action="Import" asp-route-id="@ViewBag.ContractId" method="post" id="importProductsForm">
                     @Html.AntiForgeryToken()
                     <div class="mb-3">
-                        <label for="formFile" class="form-label">Product files input</label>
+                        <label for="formFile" class="form-label">@Localizer["Product files input"]</label>
                         <input class="form-control" type="file" name="files" multiple accept=".xlsx, .xls">
                     </div>
                 </form>
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="uploadFilesHandler()">Save
-                    changes</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Close"]</button>
+                <button type="button" class="btn btn-primary"
+                    onclick="ContractProduct.upload(this)">@Localizer["Save changes"]</button>
             </div>
         </div>
     </div>

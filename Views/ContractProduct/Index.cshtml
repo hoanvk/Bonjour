@@ -1,11 +1,14 @@
-﻿@model IEnumerable<Bonjour.Models.Product>;
+﻿@using Microsoft.Extensions.Localization
+@model IEnumerable<Bonjour.Models.Product>;
 @{
     ViewData["Title"] = "Product Page";
     Layout = "_AdminLayout";
 }
+@inject IStringLocalizer<SharedResources> Localizer
+
 <h1 class="mt-4">Product</h1>
 <ol class="breadcrumb mb-4">
-    <li class="breadcrumb-item"><a asp-controller="Contract" asp-action="Index">Contract</a></li>
+    <li class="breadcrumb-item"><a asp-controller="Contract" asp-action="Index">@Localizer["Contract"]</a></li>
     <li class="breadcrumb-item active">Product</li>
 </ol>
 <div class="card mt-4">
@@ -14,12 +17,12 @@
             <thead>
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Code</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Quantity</th>
-                    <th scope="col">Loading</th>
-                    <th scope="col">Unloading</th>
-                    <th scope="col">CreatedAt</th>
+                    <th scope="col">@Localizer["Code"]</th>
+                    <th scope="col">@Localizer["Name"]</th>
+                    <th scope="col">@Localizer["Quantity"]</th>
+                    <th scope="col">@Localizer["Delivery"]</th>
+                    <th scope="col">@Localizer["Weight"]</th>
+                    <th scope="col">@Localizer["Created At"]</th>
                 </tr>
             </thead>
             <tbody>
@@ -31,7 +34,7 @@
                         <td>@product.Name</td>
                         <td>@product.Quantity</td>
                         <td>@product.Delivery</td>
-                        <td>@product.Delivery</td>
+                        <td>@product.Weight</td>
                         <td>@product.CreatedAt</td>
                     </tr>
                 }
@@ -39,53 +42,12 @@
         </table>
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#importFileModal">
-            Import
+            @Localizer["Import"]
         </button>
         <a class="btn btn-secondary" asp-action="Print" asp-controller="ContractProduct"
-            asp-route-id="@ViewBag.ContractId">Print QrCode</a>
+            asp-route-id="@ViewBag.ContractId">@Localizer["Print QrCode"]</a>
 
         <!-- Modal -->
         @Html.Partial("Import.cshtml")
     </div>
 </div>
-@section Scripts {
-    <script defer>
-        function uploadFilesHandler() {
-            const formElement = document.getElementById("importProductsForm");
-            const url = formElement.action;
-            const files = formElement.querySelector('input[name="files"]').files;
-            const formData = new FormData();
-            for (let i = 0; i < files.length; i++) {
-                formData.append('files', files[i]);
-            }
-
-            const token = document.querySelector(
-                'input[name="__RequestVerificationToken"]'
-            ).value;
-            axios.post(url, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    RequestVerificationToken: token,
-                }
-            })
-                .then((success) => {
-                    console.log("success :>> ", success);
-                    Swal.fire({
-                        icon: "success",
-                        title: "Success!",
-                        text: success.data,
-                    }).then(() => {
-                        location.reload();
-                    });
-                })
-                .catch((error) => {
-                    console.log("error :>> ", error);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: error.message,
-                    });
-                });
-        }
-    </script>
-}

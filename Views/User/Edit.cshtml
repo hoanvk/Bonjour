@@ -6,17 +6,17 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form class="row g-3" asp-action="Edit" method="post" id="editUserForm">
+                <form class="row g-3" asp-action="Edit" method="post" id="editUserForm" asp-route-id="__id">
                     @Html.AntiForgeryToken()
-                    <input type="hidden" name="Id" value="" />
+                    <input type="hidden" name="id" value="" route-id />
                     <div class="col-md-12">
                         <label for="Name" class="form-label">Name</label>
-                        <input type="text" class="form-control" name="Name" placeholder="Joe Doe">
+                        <input type="text" class="form-control" name="name" placeholder="Joe Doe">
                         <div class="invalid-feedback"></div>
                     </div>
                     <div class="col-md-12">
                         <label for="Username" class="form-label">Username</label>
-                        <input type="text" class="form-control" name="Username" placeholder="joedoe">
+                        <input type="text" class="form-control" name="username" placeholder="joedoe">
                         <div class="invalid-feedback"></div>
                     </div>
                     <div class="col-md-12">
@@ -29,7 +29,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="editUserHandler()">Save
+                <button type="button" class="btn btn-primary" onclick="User.update()">Save
                     changes</button>
             </div>
         </div>

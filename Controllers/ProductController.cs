@@ -34,8 +34,8 @@ public class ProductController : Controller
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
-        var _product = await dbContext.Products.FindAsync(id);
-        return View("Details", _product);
+        var _products = await dbContext.ProductDetails.Where(p => p.ProductId == id).ToListAsync();
+        return View("Details", _products);
     }
 
     [HttpPut]

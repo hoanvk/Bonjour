@@ -51,9 +51,9 @@
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createContractModal">
             @Localizer["Create"]
         </button>
-        <form asp-action="Delete" method="post" id="deleteContractForm">
+        <form asp-action="Delete" method="post" id="deleteContractForm" asp-route-id="__id">
             @Html.AntiForgeryToken()
-            <input type="hidden" name="id" value="" />
+            <input type="hidden" name="id" value="" route-id />
         </form>
         <!-- Modal -->
         @Html.Partial("Create.cshtml")

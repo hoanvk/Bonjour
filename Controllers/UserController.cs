@@ -117,7 +117,7 @@ public class UserController : Controller
         return Ok("Password changed successfully");
     }
     [HttpGet]
-    public async Task<IActionResult> Details(int id)
+    public async Task<IActionResult> Edit(int id)
     {
         var _user = await dbContext.Users.FindAsync(id);
         if (_user == null)

@@ -1,0 +1,11 @@
+@using Bonjour.Domain.Products
+@model ProductStatus;
+
+@if (Model == ProductStatus.AVAILABLE)
+{
+    <span class="badge rounded-pill text-bg-success">@Model.Code</span>
+}
+else
+{
+    <span class="badge rounded-pill text-bg-warning">@Model.Code</span>
+}

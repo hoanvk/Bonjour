@@ -1,41 +1,38 @@
-@model Bonjour.Models.Product;
-
+@model IEnumerable<Bonjour.Models.ProductDetails>;
 @{
+    ViewData["Title"] = "Product Details Page";
     Layout = "_AdminLayout";
 }
-
+<h1 class="mt-4">Product Details</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item"><a asp-controller="Contract" asp-action="Index">Contract</a></li>
+    <li class="breadcrumb-item active">Product Details</li>
+</ol>
 <div class="card mt-4">
     <div class="card-body">
-        <h5 class="card-title">@Model.Code</h5>
-        <p class="card-text">@Model.Name</p>
-        <div class="mb-3">
-            <label for="product_id" class="form-label">Id</label>
-            <input type="text" class="form-control" id="product_id">
-        </div>
-        <button type="button" class="btn btn-primary" id="button-confirm">Confirm</button>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">SequenceNo</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Created At</th>
+                    <th scope="col">Updated At</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var productDetail in Model)
+                {
+                    <tr>
+                        <th scope="row">@productDetail.Id</th>
+                        <td>@productDetail.SequenceNo</td>
+                        <td>@await Component.InvokeAsync("ProductStatus", new { status = productDetail.Status })</td>
+                        <td>@await Component.InvokeAsync("DateTimeDisplay", new { datetime = productDetail.CreatedAt })</td>
+                        <td>@await Component.InvokeAsync("DateTimeDisplay", new { datetime = productDetail.UpdatedAt })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 </div>
-
-@section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const connection = new signalR.HubConnectionBuilder()
-                .withUrl("/realtimehub")
-                .build();
-
-            connection.on("ReceiveNotification", (message) => {
-                console.log(`Notification: ${message}`);
-            });
-
-            connection.start().catch(err => console.error(err));
-
-            function sendNotification() {
-                const message = document.getElementById("product_id").value;
-                connection.invoke("SendNotification", message).catch(err => console.error(err));
-            }
-            const confirmButton = document.getElementById("button-confirm");
-            confirmButton.onclick = sendNotification;
-        });
-    </script>
-}

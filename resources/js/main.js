@@ -136,3 +136,5 @@ import Permission from './pages/Permission.js';
 window.Permission = Permission;
 import Shipment from './pages/Shipment.js';
 window.Shipment = Shipment;
+import User from './pages/User.js';
+window.User = User;

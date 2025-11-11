@@ -1,3 +1,4 @@
+@using Newtonsoft.Json
 @model IEnumerable<Bonjour.Models.User>;
 @{
     Layout = "_AdminLayout";
@@ -16,7 +17,7 @@
                     <th scope="col">Name</th>
                     <th scope="col">Username</th>
                     <th scope="col">Role</th>
-                    <th scope="col">CreatedAt</th>
+                    <th scope="col">Created At</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -25,19 +26,19 @@
                 {
                     <tr>
                         <th scope="row">@user.Id</th>
-                        <td>@user.Name</td>                        
+                        <td>@user.Name</td>
                         <td>@user.Username</td>
                         <td>@user.RoleId</td>
                         <td>@user.CreatedAt</td>
-                        <td><button class="btn" type="button" onclick="removeUserHandler(@user.Id)"><i
-                                    class="fa fa-trash"></i></button>
-                            <button class="btn" type="button" data-bs-toggle="modal" data-bs-target="#editUserModal" 
-                            data-user-id="@user.Id" 
-                            data-user-name="@user.Name"
-                             data-user-username="@user.Username"><i
+                        <td>
+                            <button class="btn" type="button" data-bs-toggle="modal" data-bs-target="#editUserModal"
+                                data-bs-entity="@JsonConvert.SerializeObject(user)" onclick="User.edit(this)"><i
                                     class="fa-solid fa-user"></i></button>
-                                    <button class="btn" type="button" data-bs-toggle="modal" data-bs-target="#changePasswordModal" data-user-id="@user.Id"><i
+                            <button class="btn" type="button" data-bs-toggle="modal" data-bs-target="#changePasswordModal"
+                                data-bs-entity="@JsonConvert.SerializeObject(user)" onclick="User.changePassword(this)"><i
                                     class="fa fa-key"></i></button>
+                            <button class="btn" type="button" onclick="User.remove(@user.Id)"><i
+                                    class="fa fa-trash"></i></button>
                         </td>
                     </tr>
                 }
@@ -47,9 +48,9 @@
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUserModal">
             Create
         </button>
-        <form asp-action="Delete" method="post" id="deleteUserForm">
+        <form asp-action="Delete" method="post" id="deleteUserForm" asp-route-id="__id">
             @Html.AntiForgeryToken()
-            <input type="hidden" name="id" value="" />
+            <input type="hidden" name="id" value="" route-id />
         </form>
         <!-- Modal -->
         @Html.Partial("Create")
@@ -57,94 +58,3 @@
         @Html.Partial("Edit")
     </div>
 </div>
-@section Scripts {
-    <script defer>
-        function createUserHandler() {
-            const formElement = document.getElementById('createUserForm');
-            const rolesSelectElement = formElement.querySelector('select[name="RoleId"]');
-            const roles = [];
-            
-            Array.from(rolesSelectElement.options).forEach(option => {
-                if (option.selected) {
-                    roles.push(option.value);
-                }
-            });
-            const rolesInputElement = formElement.querySelector('input[name="Roles"]');
-            rolesInputElement.value = JSON.stringify(roles);
-            submitFormData("createUserForm", [
-                'input[name="Name"]',
-                'input[name="Username"]',
-                'input[name="Password"]',
-                'input[name="ConfirmPassword"]',
-                'input[name="Roles"]'
-            ]);
-        }
-
-        function removeUserHandler(id) {
-            const form = document.getElementById("deleteUserForm");
-            const userIdElement = form.querySelector('input[name="id"]');
-            userIdElement.value = id;
-            submitFormData("deleteUserForm", ["input[name='id']"]);
-        }
-
-        const changePasswordModal = document.getElementById('changePasswordModal')
-        changePasswordModal.addEventListener('show.bs.modal', event => {
-            // Button that triggered the modal
-            const button = event.relatedTarget
-            // Extract info from data-bs-* attributes
-            const id = button.getAttribute('data-user-id')
-            const formElement = document.getElementById('changePasswordForm');
-            const inputElement = formElement.querySelector('input[name="id"]');
-            inputElement.value = id;
-        });
-
-        const editUserModal = document.getElementById('editUserModal')
-        editUserModal.addEventListener('show.bs.modal', event => {
-            // Button that triggered the modal
-            const button = event.relatedTarget
-            // Extract info from data-bs-* attributes
-            const formElement = document.getElementById('editUserForm');
-            const idInputElement = formElement.querySelector('input[name="Id"]');
-            idInputElement.value = button.getAttribute('data-user-id');
-            const nameInputElement = formElement.querySelector('input[name="Name"]');
-            nameInputElement.value = button.getAttribute('data-user-name');
-            const usernameInputElement = formElement.querySelector('input[name="Username"]');
-            usernameInputElement.value = button.getAttribute('data-user-username');
-            axios.get("@Url.Action("Details", new { Id = "__id__"})".replace("__id__", button.getAttribute('data-user-id'))).then(response => {
-                const roles = response.data.roles;
-                const rolesSelectElement = formElement.querySelector('select[name="RoleId"]');
-                for (let i = 0; i < rolesSelectElement.options.length; i++) {
-                    const option = rolesSelectElement.options[i];
-                    option.selected = roles.includes(parseInt(option.value));
-                }
-            });
-        })
-
-        function editUserHandler() {
-            const formElement = document.getElementById('editUserForm');
-            const rolesSelectElement = formElement.querySelector('select[name="RoleId"]');
-            const roles = [];
-            
-            Array.from(rolesSelectElement.options).forEach(option => {
-                if (option.selected) {
-                    roles.push(option.value);
-                }
-            });
-            const rolesInputElement = formElement.querySelector('input[name="Roles"]');
-            rolesInputElement.value = JSON.stringify(roles);
-            submitFormData("editUserForm", [
-                'input[name="Id"]',
-                'input[name="Name"]',
-                'input[name="Username"]',
-                'input[name="Roles"]'
-            ]);
-        }
-        function changePasswordHandler(id) {
-            submitFormData("changePasswordForm", [
-                'input[name="id"]',
-                'input[name="Password"]',
-                'input[name="ConfirmPassword"]'
-            ]);
-        }
-    </script>
-}

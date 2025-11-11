@@ -34,10 +34,22 @@ function update() {
 }
 
 function remove(id) {
-    const form = document.getElementById('deleteShipmentForm');
-    const shipmentIdElement = form.querySelector('input[name="id"]');
-    shipmentIdElement.value = id;
-    submitFormData('deleteShipmentForm', ["input[name='id']"]);
+    Swal.fire({
+        title: 'Confirm delete?',
+        text: 'Are you sure you want to delete this shipment?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, confirm it!',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const form = document.getElementById('deleteShipmentForm');
+            const shipmentIdElement = form.querySelector('input[name="id"]');
+            shipmentIdElement.value = id;
+            submitFormData('deleteShipmentForm', []);
+        }
+    });
 }
 
 export default {

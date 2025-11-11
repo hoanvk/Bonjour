@@ -18,10 +18,22 @@ function update() {
     ]);
 }
 function remove(id) {
-    const formElement = document.getElementById('deleteContractForm');
-    const hiddenElement = formElement.querySelector('input[name="id"]');
-    hiddenElement.value = id;
-    submitFormData('deleteContractForm', ["input[name='id']"]);
+    Swal.fire({
+        title: 'Confirm delete?',
+        text: 'Are you sure you want to delete this contract?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, confirm it!',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const formElement = document.getElementById('deleteContractForm');
+            const hiddenElement = formElement.querySelector('input[name="id"]');
+            hiddenElement.value = id;
+            submitFormData('deleteContractForm', []);
+        }
+    });
 }
 
 function edit(button) {

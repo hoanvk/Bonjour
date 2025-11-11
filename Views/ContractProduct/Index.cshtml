@@ -22,6 +22,7 @@
                     <th scope="col">@Localizer["Quantity"]</th>
                     <th scope="col">@Localizer["Delivery"]</th>
                     <th scope="col">@Localizer["Weight"]</th>
+                    <th scope="col">@Localizer["Details"]</th>
                     <th scope="col">@Localizer["Created At"]</th>
                 </tr>
             </thead>
@@ -35,6 +36,8 @@
                         <td>@product.Quantity</td>
                         <td>@product.Delivery</td>
                         <td>@product.Weight</td>
+                        <td><a asp-action="Details" asp-controller="Product"
+                                asp-route-id="@product.Id">@Localizer["Details"]</a></td>
                         <td>@product.CreatedAt</td>
                     </tr>
                 }

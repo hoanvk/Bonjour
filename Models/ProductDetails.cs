@@ -15,6 +15,6 @@ public class ProductDetails
     public string Status { get; set; }
 
     public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
     public Product Product { get; set; }
 }

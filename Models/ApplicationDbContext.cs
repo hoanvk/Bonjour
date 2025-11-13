@@ -29,25 +29,29 @@ public class ApplicationDbContext : DbContext
             .ValueGeneratedOnAdd();
         modelBuilder.Entity<Product>()
             .Property(e => e.CreatedAt)
-            .HasDefaultValueSql("DATETIME('now')"); // SQLite specific function for current timestamp
+            .HasColumnType("timestamp")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP"); // SQLite specific function for current timestamp
         modelBuilder.Entity<ProductDetails>()
             .Property(e => e.Id)
             .ValueGeneratedOnAdd();
         modelBuilder.Entity<ProductDetails>()
             .Property(e => e.CreatedAt)
-            .HasDefaultValueSql("DATETIME('now')");
+            .HasColumnType("timestamp")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
         modelBuilder.Entity<Shipment>()
             .Property(e => e.Id)
             .ValueGeneratedOnAdd();
         modelBuilder.Entity<Shipment>()
             .Property(e => e.CreatedAt)
-            .HasDefaultValueSql("DATETIME('now')");
+            .HasColumnType("timestamp")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
         modelBuilder.Entity<User>()
             .Property(e => e.Id)
             .ValueGeneratedOnAdd();
         modelBuilder.Entity<User>()
             .Property(e => e.CreatedAt)
-            .HasDefaultValueSql("DATETIME('now')");
+            .HasColumnType("timestamp")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
         modelBuilder.Entity<User>().HasData(
             new User { Id = 1, Name = "Admin", Username = "admin", Email = "admin@email.com", Password = "PC+r5h/39f33U0dRi4bUZNUlDxlHbRWpXX5L0hZGhGQ=", Salt = "QGkIA+8LmTIoNvcvVmrH1A==" }
             );
@@ -56,7 +60,8 @@ public class ApplicationDbContext : DbContext
             .ValueGeneratedOnAdd();
         modelBuilder.Entity<Role>()
             .Property(e => e.CreatedAt)
-            .HasDefaultValueSql("DATETIME('now')");
+            .HasColumnType("timestamp")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
         modelBuilder.Entity<Role>().HasData(
             new Role { Id = 1, Name = "Admin" },
             new Role { Id = 2, Name = "User" },
@@ -68,30 +73,35 @@ public class ApplicationDbContext : DbContext
             .ValueGeneratedOnAdd();
         modelBuilder.Entity<UserHasRole>()
             .Property(e => e.CreatedAt)
-            .HasDefaultValueSql("DATETIME('now')");
+            .HasColumnType("timestamp")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
         modelBuilder.Entity<Permission>()
             .Property(e => e.Id)
             .ValueGeneratedOnAdd();
         modelBuilder.Entity<Permission>()
             .Property(e => e.CreatedAt)
-            .HasDefaultValueSql("DATETIME('now')");
+            .HasColumnType("timestamp")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
         modelBuilder.Entity<RoleHasPermission>()
             .Property(e => e.Id)
             .ValueGeneratedOnAdd();
         modelBuilder.Entity<RoleHasPermission>()
             .Property(e => e.CreatedAt)
-            .HasDefaultValueSql("DATETIME('now')");
+            .HasColumnType("timestamp")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
         modelBuilder.Entity<Contract>()
             .Property(e => e.Id)
             .ValueGeneratedOnAdd();
         modelBuilder.Entity<Contract>()
             .Property(e => e.CreatedAt)
-            .HasDefaultValueSql("DATETIME('now')");
+            .HasColumnType("timestamp")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
         modelBuilder.Entity<ShipmentProduct>()
             .Property(e => e.Id)
             .ValueGeneratedOnAdd();
         modelBuilder.Entity<ShipmentProduct>()
             .Property(e => e.CreatedAt)
-            .HasDefaultValueSql("DATETIME('now')");
+            .HasColumnType("timestamp")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
     }
 }

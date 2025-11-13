@@ -1,0 +1,25 @@
+version: '3'
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        image: hoanvk/bonjour
+        container_name: hoanvk-bonjour
+        volumes:
+            - type: bind
+              source: /home/hoanvk/dev/dotnet/bonjour/bin/Release/net8.0/publish/appsettings.json
+              target: /app/appsettings.json
+            - /mnt/c/users/hoanvk/.aspnet/https:/https/
+        ports:
+            - '7255:7255'
+            - '5259:5259'
+        environment:
+            ASPNETCORE_HTTP_PORTS: 5259
+            ASPNETCORE_HTTPS_PORTS: 7255
+            ASPNETCORE_Kestrel__Certificates__Default__Password: 'trusted2025'
+            ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
+            ConnectionStrings__ReportingDbContext: 'changeit'
+networks:
+    default:
+

@@ -12,7 +12,7 @@ public class RoleHasPermission
     public int RoleId { get; set; }
     [ForeignKey("Permission")]
     public int PermissionId { get; set; }
-
+    [MaxLength(20)]
     public string? Action { get; set; }
     public DateTime CreatedAt { get; set; }
     public Role Role { get; set; }

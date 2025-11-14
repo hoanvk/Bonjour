@@ -14,13 +14,16 @@ public class User
     [Required]
     [MaxLength(50)]
     public string Username { get; set; }
+    [MaxLength(255)]
     public string Email { get; set; }
     [Required]
     [MaxLength(100)]
     public string Password { get; set; }
+    [MaxLength(255)]
     public string Salt { get; set; }
     [ForeignKey("Role")]
     public int? RoleId { get; set; }
     public Role? Role { get; set; }
     public DateTime CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 }

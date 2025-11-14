@@ -23,7 +23,7 @@ public class ShipmentProductController : Controller
         this.mediator = mediator;
     }
 
-    [HttpGet("/Shipment/{id}/Product")]
+    [HttpGet]
     public async Task<IActionResult> Index(int id)
     {
         var _products = await dbContext.ShipmentProducts.Join(dbContext.Products,
@@ -43,7 +43,7 @@ public class ShipmentProductController : Controller
         return View("Index", _products);
     }
 
-    [HttpGet("/Shipment/{id}/Product/Export")]
+    [HttpGet]
     public async Task<IActionResult> Export(int id)
     {
         logger.LogInformation("Export shipment products");

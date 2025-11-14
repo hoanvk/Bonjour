@@ -28,7 +28,7 @@ public class ContractProductController : Controller
         this.dbContext = dbContext;
         this.mediator = mediator;
     }
-    [HttpGet("/Contract/{id}/Product")]
+    [HttpGet]
     public async Task<IActionResult> Index(int id)
     {
         var _products = await dbContext.Products.Where(product => product.ContractId == id).ToListAsync();
@@ -36,7 +36,7 @@ public class ContractProductController : Controller
         return View("Index", _products);
     }
 
-    [HttpPost("/Contract/{id}/Product")]
+    [HttpPost]
     public async Task<IActionResult> Import(int id, IEnumerable<IFormFile> files)
     {
         logger.LogInformation("Import files");
@@ -66,7 +66,7 @@ public class ContractProductController : Controller
         return UnprocessableEntity(ModelState);
     }
 
-    [HttpGet("/Contract/{id}/Product/Print")]
+    [HttpGet]
     public async Task<IActionResult> Print(int id)
     {
         var model = await dbContext.Products.Join(dbContext.ProductDetails,

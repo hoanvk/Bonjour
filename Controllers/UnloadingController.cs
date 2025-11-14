@@ -23,7 +23,7 @@ public class UnloadingController : Controller
         this.dbContext = dbContext;
     }
 
-    [HttpGet("/Unloading/{id}/Product")]
+    [HttpGet]
     [Authorize(Roles = "Unloading")]
     public async Task<IActionResult> Index(int? id)
     {
@@ -59,7 +59,7 @@ public class UnloadingController : Controller
         return View("Index", _products);
     }
 
-    [HttpPost("/Unloading/{id}/Product")]
+    [HttpPost]
     public async Task<IActionResult> Create(int id, [FromBody] DeliveryRequest request)
     {
 
@@ -123,14 +123,14 @@ public class UnloadingController : Controller
         }));
     }
 
-    [HttpGet("/Unloading/{id}/Product/Scan")]
+    [HttpGet]
     [Authorize(Roles = "Unloading")]
     public IActionResult Scan(int id)
     {
         return View("Scan", id);
     }
 
-    [HttpPost("/Unloading/{id}/Product/Confirm")]
+    [HttpPost]
     [Authorize(Policy = "Unloading")]
     public async Task<IActionResult> Confirm(int id)
     {

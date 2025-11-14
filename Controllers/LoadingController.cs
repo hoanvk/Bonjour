@@ -23,7 +23,7 @@ public class LoadingController : Controller
         this.dbContext = dbContext;
     }
 
-    [HttpGet("/Loading/{id}/Product")]
+    [HttpGet]
     [Authorize(Roles = "Loading")]
     public async Task<IActionResult> Index(int? id)
     {
@@ -59,7 +59,7 @@ public class LoadingController : Controller
         return View("Index", _products);
     }
 
-    [HttpPost("/Loading/{id}/Product")]
+    [HttpPost]
     public async Task<IActionResult> Create(int id, [FromBody] DeliveryRequest request)
     {
 
@@ -130,14 +130,14 @@ public class LoadingController : Controller
             UpdatedAt = _shipmentProduct.UpdatedAt.HasValue ? _shipmentProduct.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : null
         }));
     }
-    [HttpGet("/Loading/{id}/Product/Scan")]
+    [HttpGet]
     [Authorize(Roles = "Loading")]
     public IActionResult Scan(int id)
     {
         return View("Scan", id);
     }
 
-    [HttpPost("/Loading/{id}/Product/Confirm")]
+    [HttpPost]
     [Authorize(Policy = "Loading")]
     public async Task<IActionResult> Confirm(int id)
     {

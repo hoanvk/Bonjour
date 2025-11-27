@@ -2,10 +2,10 @@ namespace Bonjour.Domain.Shipments;
 
 public class ShipmentProductDto
 {
-    public ShipmentProductDto(int id, string code, string name, int loaded, int unloaded, int weight, DateTime createdAt, DateTime? updatedAt)
+    public ShipmentProductDto(int id, string category, string name, int loaded, int unloaded, int weight, DateTime createdAt, DateTime? updatedAt)
     {
         Id = id;
-        Code = code;
+        Category = category;
         Name = name;
         Loaded = loaded;
         Unloaded = unloaded;
@@ -15,7 +15,7 @@ public class ShipmentProductDto
     }
 
     public int Id { get; set; }
-    public string Code { get; set; }
+    public string Category { get; set; }
     public string Name { get; set; }
     public int Loaded { get; set; }
     public int Unloaded { get; set; }

@@ -31,7 +31,7 @@ public class ShipmentProductController : Controller
         t2 => t2.Id,
         (t1, t2) => new { ShipmentProduct = t1, Product = t2 }).Where(m => m.ShipmentProduct.ShipmentId == id).Select(m => new ShipmentProductDto(
             m.ShipmentProduct.Id,
-            m.Product.Code,
+            m.Product.Category,
             m.Product.Name,
             m.ShipmentProduct.Loaded,
             m.ShipmentProduct.Unloaded,

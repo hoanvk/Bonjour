@@ -17,7 +17,7 @@
             <thead>
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">@Localizer["Code"]</th>
+                    <th scope="col">@Localizer["Category"]</th>
                     <th scope="col">@Localizer["Name"]</th>
                     <th scope="col">@Localizer["Quantity"]</th>
                     <th scope="col">@Localizer["Delivery"]</th>
@@ -31,7 +31,7 @@
                 {
                     <tr>
                         <th scope="row">@product.Id</th>
-                        <td>@product.Code</td>
+                        <td>@product.Category</td>
                         <td>@product.Name</td>
                         <td>@product.Quantity</td>
                         <td>@product.Delivery</td>
@@ -44,12 +44,14 @@
             </tbody>
         </table>
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#importFileModal">
+        <button type="button" class="btn btn-primary me-md-2" data-bs-toggle="modal" data-bs-target="#importFileModal"
+            style="width: 80px;">
             @Localizer["Import"]
         </button>
+        <a asp-action="Export" asp-controller="ContractProduct" asp-route-id="@ViewBag.ContractId"
+            class="btn btn-primary me-md-2" style="width: 80px;" role="button">@Localizer["Export"]</a>
         <a class="btn btn-secondary" asp-action="Print" asp-controller="ContractProduct"
             asp-route-id="@ViewBag.ContractId">@Localizer["Print QrCode"]</a>
-
         <!-- Modal -->
         @Html.Partial("Import.cshtml")
     </div>

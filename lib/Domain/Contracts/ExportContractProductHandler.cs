@@ -4,19 +4,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using OfficeOpenXml;
 
-namespace Bonjour.Domain.Shipments;
+namespace Bonjour.Domain.Contracts;
 
-public class ExportShipmentProductHandler : IRequestHandler<ExportShipmentProductRequest, byte[]>
+public class ExportContractProductHandler : IRequestHandler<ExportContractProductRequest, byte[]>
 {
     private readonly ApplicationDbContext dbContext;
     private readonly IStringLocalizer<SharedResources> localizer;
-    public ExportShipmentProductHandler(ApplicationDbContext dbContext, IStringLocalizer<SharedResources> localizer)
+    public ExportContractProductHandler(ApplicationDbContext dbContext, IStringLocalizer<SharedResources> localizer)
     {
         this.dbContext = dbContext;
         this.localizer = localizer;
     }
 
-    public async Task<byte[]> Handle(ExportShipmentProductRequest request, CancellationToken cancellationToken)
+    public async Task<byte[]> Handle(ExportContractProductRequest request, CancellationToken cancellationToken)
     {
         ExcelPackage.License.SetNonCommercialPersonal("Bonjour");
         var _shipmentProducts = await dbContext.ShipmentProducts.Join(dbContext.Products,
@@ -24,14 +24,16 @@ public class ExportShipmentProductHandler : IRequestHandler<ExportShipmentProduc
          t2 => t2.Id,
          (t1, t2) => new { ShipmentProduct = t1, Product = t2 })
          .Join(dbContext.Contracts, t => t.Product.ContractId, t3 => t3.Id, (t, t3) => new { t.ShipmentProduct, t.Product, Contract = t3 })
-         .Where(m => m.ShipmentProduct.ShipmentId == request.ShipmentId).Select(m => new
+         .Join(dbContext.Shipments, t => t.ShipmentProduct.ShipmentId, t4 => t4.Id, (t, t4) => new { t.ShipmentProduct, t.Product, t.Contract, Shipment = t4 })
+         .Where(m => m.Contract.Id == request.ContractId).Select(m => new
          {
              Contract = m.Contract.Name,
              m.Product.Category,
              m.Product.Name,
              m.ShipmentProduct.Loaded,
              m.ShipmentProduct.Unloaded,
-             m.Product.Weight
+             m.Product.Weight,
+             m.Shipment.Departure
          }).ToListAsync();
         using (var package = new ExcelPackage())
         {
@@ -44,6 +46,7 @@ public class ExportShipmentProductHandler : IRequestHandler<ExportShipmentProduc
             worksheet.Cells[1, 5].Value = localizer["LoadedWeight"];
             worksheet.Cells[1, 6].Value = localizer["Unloaded"];
             worksheet.Cells[1, 7].Value = localizer["UnloadedWeight"];
+            worksheet.Cells[1, 8].Value = localizer["Departure"];
             int row = 2;
             foreach (var _shipmentProduct in _shipmentProducts)
             {
@@ -55,6 +58,7 @@ public class ExportShipmentProductHandler : IRequestHandler<ExportShipmentProduc
                 worksheet.Cells[row, 5].Value = _shipmentProduct.Weight * _shipmentProduct.Loaded;
                 worksheet.Cells[row, 6].Value = _shipmentProduct.Unloaded;
                 worksheet.Cells[row, 7].Value = _shipmentProduct.Weight * _shipmentProduct.Unloaded;
+                worksheet.Cells[row, 8].Value = _shipmentProduct.Departure.ToString("yyyy-MM-dd HH:mm:ss");
                 row++;
             }
             // Auto-fit columns for better readability

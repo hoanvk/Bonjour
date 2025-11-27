@@ -37,7 +37,7 @@ public class ImportContractProductHandler : IRequestHandler<ImportContractProduc
                 // Determine the range of used cells
                 int startRow = worksheet.Dimension.Start.Row;
                 int endRow = worksheet.Dimension.End.Row;
-                int startCol = worksheet.Dimension.Start.Column;
+                int startCol = worksheet.Dimension.Start.Column + 1;
                 int endCol = worksheet.Dimension.End.Column;
 
                 // Loop through rows (assuming first row is header)
@@ -45,10 +45,10 @@ public class ImportContractProductHandler : IRequestHandler<ImportContractProduc
                 {
                     Product product = new Product();
                     // Assuming columns are in a specific order: Name, Age, City
-                    product.Code = worksheet.Cells[rowNum, startCol].Text;
-                    product.Name = worksheet.Cells[rowNum, startCol + 1].Text;
-                    product.Quantity = int.Parse(worksheet.Cells[rowNum, startCol + 2].Text);
-                    product.Weight = int.Parse(worksheet.Cells[rowNum, startCol + 3].Text);
+                    product.Category = worksheet.Cells[rowNum, startCol].Text.Trim();
+                    product.Name = worksheet.Cells[rowNum, startCol + 1].Text.Trim();
+                    product.Quantity = (int)decimal.Parse(worksheet.Cells[rowNum, startCol + 2].Text.Trim());
+                    product.Weight = (int)decimal.Parse(worksheet.Cells[rowNum, startCol + 3].Text.Trim());
                     product.Delivery = 0;
                     product.ContractId = id;
                     dbContext.Products.Add(product);

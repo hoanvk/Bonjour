@@ -47,7 +47,7 @@ public class LoadingController : Controller
          .Where(m => m.ShipmentProduct.ShipmentId == id)
          .Select(m => new ShipmentProductDto(
              m.Product.Id,
-             m.Product.Code,
+             m.Product.Category,
              m.Product.Name,
              m.ShipmentProduct.Loaded,
              m.ShipmentProduct.Unloaded,
@@ -122,7 +122,7 @@ public class LoadingController : Controller
         return Ok(JsonConvert.SerializeObject(new
         {
             _product.Id,
-            _product.Code,
+            _product.Category,
             _product.Name,
             _shipmentProduct.Loaded,
             _shipmentProduct.Unloaded,

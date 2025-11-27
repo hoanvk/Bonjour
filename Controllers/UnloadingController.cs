@@ -47,7 +47,7 @@ public class UnloadingController : Controller
          .Where(m => m.ShipmentProduct.ShipmentId == id)
          .Select(m => new ShipmentProductDto(
              m.Product.Id,
-             m.Product.Code,
+             m.Product.Category,
              m.Product.Name,
              m.ShipmentProduct.Loaded,
              m.ShipmentProduct.Unloaded,
@@ -95,7 +95,7 @@ public class UnloadingController : Controller
         .FirstOrDefaultAsync(sp => sp.ProductId == _product.Id && sp.ShipmentId == id);
         if (_shipmentProduct == null)
         {
-            ModelState.AddModelError("message", $"Product {_product.Code} is not in Shipment {id}");
+            ModelState.AddModelError("message", $"Product {_product.Name} is not in Shipment {id}");
             return UnprocessableEntity(ModelState);
         }
         if (productStatus == ProductStatus.LOADED)
@@ -114,7 +114,7 @@ public class UnloadingController : Controller
         return Ok(JsonConvert.SerializeObject(new
         {
             _product.Id,
-            _product.Code,
+            _product.Category,
             _product.Name,
             _shipmentProduct.Loaded,
             _shipmentProduct.Unloaded,

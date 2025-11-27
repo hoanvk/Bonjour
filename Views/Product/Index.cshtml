@@ -5,7 +5,7 @@
 }
 <h1 class="mt-4">Product</h1>
 <ol class="breadcrumb mb-4">
-    <li class="breadcrumb-item"><a asp-controller="Shipment" asp-action="Index">Freight</a></li>
+    <li class="breadcrumb-item"><a asp-controller="Shipment" asp-action="Index">Contract</a></li>
     <li class="breadcrumb-item active">Product</li>
 </ol>
 <div class="card mt-4">
@@ -14,7 +14,7 @@
             <thead>
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Code</th>
+                    <th scope="col">Category</th>
                     <th scope="col">Name</th>
                     <th scope="col">Quantity</th>
                     <th scope="col">Delivery</th>
@@ -25,7 +25,7 @@
                 {
                     <tr>
                         <th scope="row">@product.Id</th>
-                        <td>@product.Code</td>
+                        <td>@product.Category</td>
                         <td>@product.Name</td>
                         <td>@product.Quantity</td>
                         <td>@product.Delivery</td>

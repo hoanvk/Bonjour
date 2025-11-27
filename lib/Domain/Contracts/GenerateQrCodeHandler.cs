@@ -39,7 +39,7 @@ public class GenerateQrCodeHandler : IRequestHandler<GenerateQrCodeRequest, int>
                 using (PngByteQRCode qrCode = new PngByteQRCode(qrCodeData))
                 {
                     byte[] qrCodeImageBytes = qrCode.GetGraphic(10);
-                    string directory = Path.Combine("storage", "qrcode", $"{_item.product.ContractId}", _item.product.Code);
+                    string directory = Path.Combine("storage", "qrcode", $"{_item.product.ContractId}", _item.product.Name);
                     if (!Directory.Exists(directory))
                     {
                         Directory.CreateDirectory(directory);

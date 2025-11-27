@@ -10,8 +10,8 @@ public class Product
     public int Id { get; set; }
     [ForeignKey("Contract")]
     public int? ContractId { get; set; }
-    [MaxLength(20)]
-    public string Code { get; set; }
+    [MaxLength(100)]
+    public string Category { get; set; }
     [MaxLength(255)]
     public string Name { get; set; }
     public int Quantity { get; set; }

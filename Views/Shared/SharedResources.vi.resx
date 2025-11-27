@@ -186,4 +186,13 @@
     <data name="Error importing file. Please try again." xml:space="preserve">
         <value>Lỗi khi nhập tệp. Vui lòng thử lại.</value>
     </data>
+    <data name="Category" xml:space="preserve">
+        <value>Hạng mục</value>
+    </data>
+    <data name="LoadedWeight" xml:space="preserve">
+        <value>Trọng lượng đã đóng hàng</value>
+    </data>
+    <data name="UnloadedWeight" xml:space="preserve">
+        <value>Trọng lượng đã dỡ hàng</value>
+    </data>
 </root>

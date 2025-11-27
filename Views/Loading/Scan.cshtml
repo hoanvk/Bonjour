@@ -23,7 +23,7 @@
         function onScanSuccess(decodedText, decodedResult) {
             // handle the scanned code as you like, for example:
             console.log(`Code matched = ${decodedText}`, decodedResult);
-            // html5QrcodeScanner.pause();
+            html5QrcodeScanner.pause();
             /*
             Swal.fire({
                 title: "Good job!",
@@ -37,11 +37,11 @@
             createHttpPost("@Url.Action("Create", "Loading", new { Id = Model })", { message: decodedText }, {
                 onSuccess: function (response) {
                     connection.invoke("SendNotification", response.data).catch(err => console.error(err));
-                    // html5QrcodeScanner.resume();
+                    html5QrcodeScanner.resume();
                 },
                 onError: function (error) {
                     console.log(error);
-                    // html5QrcodeScanner.resume();
+                    html5QrcodeScanner.resume();
                 }
             });
 

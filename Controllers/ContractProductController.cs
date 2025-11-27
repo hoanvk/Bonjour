@@ -72,9 +72,25 @@ public class ContractProductController : Controller
         var model = await dbContext.Products.Join(dbContext.ProductDetails,
         product => product.Id,
         productDetail => productDetail.ProductId,
-        (product, productDetail) => new { product, productDetail }).Where(model => model.product.ContractId == id).ToListAsync();
-        var products = model.Select(item => new ProductDto(item.productDetail.Id, $"{item.product.Code}-{item.productDetail.SequenceNo}", item.product.Name, $"/QrCode/{item.product.ContractId}/{item.product.Code}/{item.productDetail.ShortId}.png"));
+        (product, productDetail) => new { product, productDetail })
+        .Join(dbContext.Contracts, t => t.product.ContractId, contract => contract.Id, (t, contract) => new { t.product, t.productDetail, contract })
+        .Where(model => model.product.ContractId == id).ToListAsync();
+        var products = model.Select(item => new ProductDto(
+            item.productDetail.Id,
+            item.contract.Name,
+            item.product.Category,
+            $"{item.product.Name}-{item.productDetail.SequenceNo}",
+            $"/QrCode/{item.product.ContractId}/{item.product.Name}/{item.productDetail.ShortId}.png"));
         ViewBag.ContractId = id;
         return View(products);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Export(int id)
+    {
+        logger.LogInformation("Export shipment products");
+        var fileContent = await mediator.Send(new ExportContractProductRequest(id));
+        var fileName = $"contract_{id}_products.xlsx";
+        return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
     }
 }
